@@ -1,4 +1,4 @@
 (library
     (name core)
-    (libraries containers containers.data yojson)
+    (libraries containers data)
 )
