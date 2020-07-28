@@ -11,14 +11,9 @@ let brooke = atom "brooke"
 let damocles = atom "damocles"
 
 (* predicate symbols *)
-let parent l r = {
-    Core.Basic.symbol = "parent_of" /. 2;
-    args = [l ; r]
-}
-let ancestor l r = {
-    Core.Basic.symbol = "ancestor_of" /. 2;
-    args = [l ; r]
-}
+let parent l r = Core.Predicate.make "parent_of" [l ; r]
+
+let ancestor l r = Core.Predicate.make "ancestor_of" [l ; r]
 
 (* fact and clause construction *)
 let fact pred = {

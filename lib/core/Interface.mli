@@ -3,5 +3,4 @@ val int : int -> Term.t
 val bool : bool -> Term.t
 val atom : string -> Term.t
 
-val (/.) : string -> int -> Basic.predicate_symbol
-val (:=) : Basic.predicate -> Basic.predicate list -> Basic.clause
+val (:=) : Predicate.t -> Predicate.t list -> Basic.clause

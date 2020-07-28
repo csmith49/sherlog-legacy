@@ -13,6 +13,10 @@ and solve_aux equations sub = match equations with
             rest in
         solve_aux rest' sub'
     | (x, Term.Variable y) :: rest ->
-        let equations' = (Term.Variable y, x) :: rest in
-        solve_aux equations' sub
+        if Term.occurs y x then None else
+        let sub' = Substitution.add y x sub in
+        let rest' = CCList.map 
+            (fun (l, r) -> (Substitution.apply l sub', Substitution.apply r sub'))
+            rest in
+        solve_aux rest' sub'
     | _ -> None
