@@ -1,4 +1,4 @@
 (library
     (name sherlog)
-    (libraries core data)
+    (libraries core data interface)
 )

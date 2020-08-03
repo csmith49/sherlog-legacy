@@ -3,7 +3,4 @@ let int i = Term.Integer i
 let bool b = Term.Boolean b
 let atom s = Term.Atom s
 
-let (:=) head body = {
-    Basic.head = head;
-    body = body;
-}
+let (:=) head body = Clause.make head body

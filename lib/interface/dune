@@ -1,0 +1,9 @@
+(library
+    (name interface)
+    (libraries core data)
+)
+(ocamllex lexer)
+
+(menhir
+    (modules parser)
+)
