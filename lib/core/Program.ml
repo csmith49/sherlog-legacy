@@ -1,5 +1,8 @@
 type t = Clause.t list
 
+let of_clause_list p = p
+let to_clause_list p = p
+
 let rec to_string = function
   | [] -> ""
   | clause :: rest ->

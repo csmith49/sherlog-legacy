@@ -9,7 +9,7 @@ let body clause = clause.body
 let to_string clause =
     let head = Predicate.to_string clause.head in
     let body = clause.body |> CCList.map Predicate.to_string |> CCString.concat ", " in
-        head ^ " :- " ^ body
+    if CCString.equal body "" then head else head ^ " :- " ^ body
 
 let apply obligation clause = match Obligation.discharge_predicate obligation with
     | None -> Some obligation
