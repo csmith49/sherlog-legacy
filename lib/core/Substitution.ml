@@ -8,6 +8,8 @@ let add = IdMap.add
 let add_all ps m = IdMap.add_list m ps
 let of_list = IdMap.of_list
 
+let compose left right = of_list ((IdMap.to_list left) @ (IdMap.to_list right))
+
 let to_string sub = sub
     |> IdMap.to_list
     |> CCList.map (fun (k, v) -> 

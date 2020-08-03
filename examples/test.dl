@@ -1,2 +1,0 @@
-test(X, x) :- foo(X, y), bar(y, 2, false, x).
-foo(x, y) :- .

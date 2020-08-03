@@ -8,6 +8,7 @@
 %token ARROW
 %token PERIOD
 %token COMMA
+%token QMARK
 %token EOF
 
 %token TRUE
@@ -16,7 +17,7 @@
 %token <string> SYMBOL
 %token <string> VARIABLE
 
-%start <Program.t> program
+%start <(Predicate.t list * Program.t)> program
 
 %%
 
@@ -34,9 +35,10 @@ predicate : s = SYMBOL; LPARENS; ts = term_list; RPARENS { Predicate.make s ts }
 
 predicate_list : ps = separated_list(COMMA, predicate) { ps } ;
 
-clause :
-    | fact = predicate; PERIOD { Clause.fact fact }
-    | head = predicate; ARROW; body = predicate_list; PERIOD { Clause.make head body }
+line :
+    | fact = predicate; PERIOD { Source.EDB (Clause.fact fact) }
+    | head = predicate; ARROW; body = predicate_list; PERIOD { Source.EDB (Clause.make head body) }
+    | qs = predicate_list; QMARK { Source.IDB qs }
     ;
 
-program : cs = list(clause); EOF { cs } ;
+program : cs = list(line); EOF { Source.process_lines cs } ;

@@ -6,6 +6,8 @@ val add : Data.Identifier.t -> Term.t -> t -> t
 val add_all : (Data.Identifier.t * Term.t) list -> t -> t
 val of_list : (Data.Identifier.t * Term.t) list -> t
 
+val compose : t -> t -> t
+
 (* usage on terms *)
 val apply : Term.t -> t -> Term.t
 

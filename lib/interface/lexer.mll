@@ -15,6 +15,7 @@ rule read = parse
     | ":-" { ARROW }
     | "." { PERIOD }
     | "," { COMMA }
+    | "?" { QMARK }
     | eof { EOF }
     | "true" { TRUE }
     | "false" { FALSE }
