@@ -13,6 +13,11 @@ type t = {
 
 let symbol pred = pred.symbol
 let arguments pred = pred.arguments
+let variables pred = pred.arguments
+    |> CCList.filter_map (fun arg -> match arg with
+        | Term.Variable x -> Some x
+        | _ -> None
+    )
 
 let equal left right = (symbol_equal left.symbol right.symbol) &&
     (CCList.equal Term.equal left.arguments right.arguments)

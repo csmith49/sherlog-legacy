@@ -31,11 +31,12 @@ let compare left right =
 
 let equal left right = (compare left right) == 0
 
-let extend str id = {
+let extend id str = {
     name = str;
     index = 0;
     context = to_context id;
 }
+let extend_by_index id index = { id with index = index }
 
 let split n id = CCList.range 0 n
     |> CCList.map (fun index -> {

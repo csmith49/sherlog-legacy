@@ -3,9 +3,14 @@ type t
 (* access *)
 val head : t -> Predicate.t
 val body : t -> Predicate.t list
+val variables : t -> Data.Identifier.t list
 
 (* printing *)
 val to_string : t -> string
+
+(* manipulation *)
+val substitute : t -> Substitution.t -> t
+val freshen : t -> t
 
 (* usage *)
 val apply : Obligation.t -> t -> Obligation.t option

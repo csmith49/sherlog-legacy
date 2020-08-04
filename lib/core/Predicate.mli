@@ -4,6 +4,7 @@ type t
 (* access *)
 val symbol : t -> symbol
 val arguments : t -> Term.t list
+val variables : t -> Data.Identifier.t list
 
 (* printing *)
 val symbol_to_string : symbol -> string
