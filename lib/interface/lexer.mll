@@ -19,6 +19,7 @@ rule read = parse
     | eof { EOF }
     | "true" { TRUE }
     | "false" { FALSE }
+    | '-'? ['0'-'9']+ '.' ['0'-'9']+ { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
     | '-'? ['0'-'9']+ { INTEGER (int_of_string (Lexing.lexeme lexbuf)) }
     | ['A'-'Z'] { VARIABLE (Lexing.lexeme lexbuf)}
     | ['a'-'z']+ { SYMBOL (Lexing.lexeme lexbuf) }

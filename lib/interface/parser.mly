@@ -1,6 +1,5 @@
 %{
     open Core
-    open Data
 %}
 
 %token LPARENS
@@ -13,6 +12,7 @@
 
 %token TRUE
 %token FALSE
+%token <float> FLOAT
 %token <int> INTEGER
 %token <string> SYMBOL
 %token <string> VARIABLE
@@ -22,11 +22,13 @@
 %%
 
 term :
-    | TRUE { Term.Boolean true }
-    | FALSE { Term.Boolean false }
-    | i = INTEGER { Term.Integer i} 
-    | s = SYMBOL {Term.Atom s }
-    | x = VARIABLE { Term.Variable (Identifier.of_string x) }
+    | TRUE { Term.Make.bool true }
+    | FALSE { Term.Make.bool false }
+    | f = FLOAT { Term.Make.float f }
+    | i = INTEGER { Term.Make.int i} 
+    | s = SYMBOL {Term.Make.atom s }
+    | x = VARIABLE { Term.Make.var x }
+    | f = SYMBOL; LPARENS; args = separated_list(COMMA, term); RPARENS { Term.Make.apply f args }
     ;
 
 term_list : ts = separated_list(COMMA, term) { ts } ;

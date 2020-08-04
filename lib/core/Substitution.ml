@@ -23,4 +23,6 @@ let rec apply term sub = match term with
         | Some term' -> apply term' sub
         | None -> term
     end
+    | Term.Function (f, args) ->
+        let args' = CCList.map (fun t -> apply t sub) args in Term.Make.apply f args'
     | _ -> term
