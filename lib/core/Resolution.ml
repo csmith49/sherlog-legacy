@@ -1,14 +1,14 @@
 type t = {
     subobligation : Predicate.t;
     substitution : Substitution.t;
-    existential_context : Predicate.t list;
 }
 type resolution = t
+
+type strategy = Obligation.t -> (resolution * Obligation.t) list
 
 let extend base extension = {
     subobligation = extension.subobligation;
     substitution = Substitution.compose base.substitution extension.substitution;
-    existential_context = base.existential_context @ extension.existential_context;
 }
 
 
@@ -17,7 +17,6 @@ let root = Predicate.make "root" []
 let initial = {
     subobligation = root;
     substitution = Substitution.empty;
-    existential_context = [];
 }
 
 module Result = struct
@@ -48,12 +47,14 @@ module Tree = struct
         | Resolution (resolution, obligation) ->
             if Obligation.is_predicate_satisfied obligation then
                 [Terminal Result.Success]
-            else strategy obligation
+            else
+                let results = strategy obligation
                 |> CCList.map (fun (r, ob) ->
                     let resolution' = extend resolution r in
                     let obligation' = ob in
                         Resolution (resolution', obligation')
-                )
+                ) in
+                if (CCList.length results) == 0 then [Terminal Result.Failure] else results
 
     let is_expandable tree =
         if Data.Tree.is_leaf tree then

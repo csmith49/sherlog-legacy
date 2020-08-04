@@ -9,6 +9,7 @@ val to_string : t -> string
 
 (* usage *)
 val apply : Obligation.t -> t -> Obligation.t option
+val resolve : Obligation.t -> t -> (Resolution.t * Obligation.t) option
 
 (* construction *)
 val make : Predicate.t -> Predicate.t list -> t

@@ -7,4 +7,6 @@ val add_all : Predicate.t list -> t -> t
 val discharge_predicate : t -> (Predicate.t * t) option
 val is_predicate_satisfied : t -> bool
 
+val empty : t
+
 val to_string : t -> string

@@ -11,3 +11,7 @@ let rec to_string = function
             clause' ^ "\n" ^ rest'
 
 let resolve obligation program = program |> CCList.filter_map (Clause.apply obligation)
+
+let linear_strategy program obligation = program
+    |> to_clause_list
+    |> CCList.filter_map (Clause.resolve obligation)

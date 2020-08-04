@@ -21,5 +21,20 @@ let apply obligation clause = match Obligation.discharge_predicate obligation wi
         | None -> None
     end
 
+let resolve obligation clause = match Obligation.discharge_predicate obligation with
+    | None -> None
+    | Some (predicate, obligation) -> begin match Predicate.unify predicate clause.head with
+        | Some substitution ->
+            let obligation = obligation
+                |> Obligation.add_all clause.body
+                |> fun ob -> Obligation.substitute ob substitution in
+            let resolution = {
+                Resolution.subobligation = predicate;
+                substitution = substitution;
+            } in
+            Some (resolution, obligation)
+        | _ -> None
+    end
+
 let make head body = {head = head; body = body}
 let fact pred = {head = pred; body = []}
