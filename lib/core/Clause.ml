@@ -44,7 +44,8 @@ let apply obligation clause = match Obligation.discharge_predicate obligation wi
         | None -> None
     end
 
-let resolve obligation clause = let clause = freshen clause in match Obligation.discharge_predicate obligation with
+let resolve context clause =
+    let clause = freshen clause in match context |> Context.obligation |> Obligation.discharge_predicate with
         | None -> None
         | Some (predicate, obligation) -> begin match Predicate.unify predicate clause.head with
             | Some substitution ->
@@ -55,7 +56,7 @@ let resolve obligation clause = let clause = freshen clause in match Obligation.
                     Resolution.subobligation = predicate;
                     substitution = substitution;
                 } in
-                Some (resolution, obligation)
+                Some (resolution, context |> Context.set_obligation obligation)
             | _ -> None
         end
 

@@ -4,7 +4,7 @@ type t = {
 }
 type resolution = t
 
-type strategy = Obligation.t -> (resolution * Obligation.t) list
+type strategy = Context.t -> (resolution * Context.t) list
 
 let extend base extension = {
     subobligation = extension.subobligation;
@@ -39,20 +39,19 @@ end
 module Tree = struct
     type node =
         | Terminal of Result.t
-        | Resolution of resolution * Obligation.t
+        | Resolution of resolution * Context.t
     type t = node Data.Tree.tree
 
     let expand_node strategy = function
         | Terminal _ -> []
-        | Resolution (resolution, obligation) ->
-            if Obligation.is_predicate_satisfied obligation then
+        | Resolution (resolution, context) ->
+            if Obligation.is_predicate_satisfied (Context.obligation context) then
                 [Terminal Result.Success]
             else
-                let results = strategy obligation
-                |> CCList.map (fun (r, ob) ->
+                let results = strategy context
+                |> CCList.map (fun (r, context') ->
                     let resolution' = extend resolution r in
-                    let obligation' = ob in
-                        Resolution (resolution', obligation')
+                        Resolution (resolution', context')
                 ) in
                 if (CCList.length results) == 0 then [Terminal Result.Failure] else results
 
@@ -64,7 +63,7 @@ module Tree = struct
         else false
 
     let of_query query =
-        let node = Resolution (initial, Obligation.of_query query) in
+        let node = Resolution (initial, Context.of_query query) in
             Data.Tree.leaf node
 
     let rec resolve_zipper strategy zipper = match Data.Tree.find is_expandable zipper with

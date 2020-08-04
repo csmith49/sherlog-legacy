@@ -3,7 +3,7 @@ type t = {
     substitution : Substitution.t;
 }
 type resolution = t
-type strategy = Obligation.t -> (resolution * Obligation.t) list
+type strategy = Context.t -> (resolution * Context.t) list
 
 val extend : t -> t -> t
 val initial : t
