@@ -4,6 +4,8 @@ type t
 val head : t -> Predicate.t
 val body : t -> Predicate.t list
 val variables : t -> Data.Identifier.t list
+val existential_variables : t -> Data.Identifier.t list
+val is_existential : t -> bool
 
 (* printing *)
 val to_string : t -> string

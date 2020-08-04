@@ -61,3 +61,14 @@ let resolve obligation clause = let clause = freshen clause in match Obligation.
 
 let make head body = {head = head; body = body}
 let fact pred = {head = pred; body = []}
+
+module IdSet = CCSet.Make(Data.Identifier)
+
+let existential_variables clause =
+    let h_vars = clause.head |> Predicate.variables |> IdSet.of_list in
+    let b_vars = clause.body |> CCList.flat_map Predicate.variables |> IdSet.of_list in
+    let e_vars = IdSet.diff h_vars b_vars in
+        e_vars |> IdSet.to_list
+
+(* todo - cache this *)
+let is_existential clause = CCList.is_empty (existential_variables clause)
