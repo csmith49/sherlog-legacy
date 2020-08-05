@@ -37,6 +37,6 @@ let cached_step predicate state = state.existential_context
 let intro_step predicate state = match Distribution.resolve predicate with
     | Some cost -> 
         let step = ProofStep.make predicate Substitution.empty cost in
-        let state = state |> State.extend_existential_context predicate in
+        let state = state |> extend_existential_context predicate in
             Some (step, state)
     | None -> None

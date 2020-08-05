@@ -16,7 +16,7 @@ val freshen : t -> t
 
 (* usage *)
 val apply : Obligation.t -> t -> Obligation.t option
-val resolve : State.t -> t -> (ProofStep.t * State.t) list
+val resolve : ProofState.t -> t -> (ProofStep.t * ProofState.t) list
 
 (* construction *)
 val make : Predicate.t -> Predicate.t list -> t

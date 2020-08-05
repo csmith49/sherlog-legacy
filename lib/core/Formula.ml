@@ -8,7 +8,7 @@ let conjunct_to_string = function
 
 type t = conjunct list
 
-let to_string formula = formula
+let to_string formula = if CCList.is_empty formula then "true" else formula
     |> CCList.map conjunct_to_string
     |> CCString.concat " & "
 

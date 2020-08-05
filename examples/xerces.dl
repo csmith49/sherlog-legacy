@@ -3,4 +3,4 @@ parent(brooke, damocles).
 ancestor(X, Y) :- parent(X, Y).
 ancestor(X, Y) :- parent(X, Z), ancestor(Z, Y).
 
-ancestor(xerces, X)?
+ancestor(xerces, damocles)?

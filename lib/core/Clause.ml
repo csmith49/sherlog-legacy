@@ -56,21 +56,21 @@ let existential_variables clause =
 let is_existential clause = CCList.is_empty (existential_variables clause)
 
 let resolve state clause = let clause = freshen clause in
-    match state |> State.discharge_predicate with
-        | None -> None
+    match state |> ProofState.discharge_predicate with
+        | None -> []
         | Some (predicate, state) ->
             if is_existential clause then
-                let cached_steps = State.cached_step predicate state in
-                let intro_step = State.intro_step predicate state |> CCOpt.to_list in
+                let cached_steps = ProofState.cached_step predicate state in
+                let intro_step = ProofState.intro_step predicate state |> CCOpt.to_list in
                     intro_step @ cached_steps
             else begin match Predicate.unify predicate clause.head with
                 | Some substitution ->
                     let obligation = state
-                        |> State.obligation
+                        |> ProofState.obligation
                         |> Obligation.add_all clause.body
                         |> fun ob -> Obligation.substitute ob substitution in
-                    let step = ProofStep.make predicate substitution in
-                    [ (step, state |> State.set_obligation obligation) ]
+                    let step = ProofStep.make_free predicate substitution in
+                    [ (step, state |> ProofState.set_obligation obligation) ]
                 | None -> []
             end
 (* 

@@ -1,4 +1,4 @@
-type strategy = State.t -> (ProofStep.t * State.t) list
+type strategy = ProofState.t -> (ProofStep.t * ProofState.t) list
 
 module Result = struct
     type t =
@@ -13,13 +13,13 @@ end
 module Tree = struct
     type node =
         | Terminal of Result.t
-        | Resolution of ProofStep.t * State.t
+        | Resolution of ProofStep.t * ProofState.t
     type t = node Data.Tree.tree
 
     let expand_node strategy = function
         | Terminal _ -> []
         | Resolution (_, state) ->
-            if Obligation.is_predicate_satisfied (State.obligation state) then
+            if Obligation.is_predicate_satisfied (ProofState.obligation state) then
                 [Terminal Result.Success]
             else
                 let results = strategy state
@@ -35,7 +35,7 @@ module Tree = struct
         else false
 
     let of_query query =
-        let node = Resolution (ProofStep.initial, State.of_query query) in
+        let node = Resolution (ProofStep.initial, ProofState.of_query query) in
             Data.Tree.leaf node
 
     let rec resolve_zipper strategy zipper = match Data.Tree.find is_expandable zipper with

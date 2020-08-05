@@ -1,4 +1,4 @@
-type strategy = State.t -> (ProofStep.t * State.t) list
+type strategy = ProofState.t -> (ProofStep.t * ProofState.t) list
 
 module Result : sig
     type t =
