@@ -44,6 +44,36 @@ let apply obligation clause = match Obligation.discharge_predicate obligation wi
         | None -> None
     end
 
+module IdSet = CCSet.Make(Data.Identifier)
+
+let existential_variables clause =
+    let h_vars = clause.head |> Predicate.variables |> IdSet.of_list in
+    let b_vars = clause.body |> CCList.flat_map Predicate.variables |> IdSet.of_list in
+    let e_vars = IdSet.diff h_vars b_vars in
+        e_vars |> IdSet.to_list
+
+(* todo - cache this *)
+let is_existential clause = CCList.is_empty (existential_variables clause)
+
+let resolve state clause = let clause = freshen clause in
+    match state |> State.discharge_predicate with
+        | None -> None
+        | Some (predicate, state) ->
+            if is_existential clause then
+                let cached_steps = State.cached_step predicate state in
+                let intro_step = State.intro_step predicate state |> CCOpt.to_list in
+                    intro_step @ cached_steps
+            else begin match Predicate.unify predicate clause.head with
+                | Some substitution ->
+                    let obligation = state
+                        |> State.obligation
+                        |> Obligation.add_all clause.body
+                        |> fun ob -> Obligation.substitute ob substitution in
+                    let step = ProofStep.make predicate substitution in
+                    [ (step, state |> State.set_obligation obligation) ]
+                | None -> []
+            end
+(* 
 let resolve context clause =
     let clause = freshen clause in match context |> Context.obligation |> Obligation.discharge_predicate with
         | None -> None
@@ -58,18 +88,7 @@ let resolve context clause =
                 } in
                 Some (resolution, context |> Context.set_obligation obligation)
             | _ -> None
-        end
+        end *)
 
 let make head body = {head = head; body = body}
 let fact pred = {head = pred; body = []}
-
-module IdSet = CCSet.Make(Data.Identifier)
-
-let existential_variables clause =
-    let h_vars = clause.head |> Predicate.variables |> IdSet.of_list in
-    let b_vars = clause.body |> CCList.flat_map Predicate.variables |> IdSet.of_list in
-    let e_vars = IdSet.diff h_vars b_vars in
-        e_vars |> IdSet.to_list
-
-(* todo - cache this *)
-let is_existential clause = CCList.is_empty (existential_variables clause)

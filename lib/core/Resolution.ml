@@ -1,23 +1,4 @@
-type t = {
-    subobligation : Predicate.t;
-    substitution : Substitution.t;
-}
-type resolution = t
-
-type strategy = Context.t -> (resolution * Context.t) list
-
-let extend base extension = {
-    subobligation = extension.subobligation;
-    substitution = Substitution.compose base.substitution extension.substitution;
-}
-
-
-let root = Predicate.make "root" []
-
-let initial = {
-    subobligation = root;
-    substitution = Substitution.empty;
-}
+type strategy = State.t -> (ProofStep.t * State.t) list
 
 module Result = struct
     type t =
@@ -29,29 +10,20 @@ module Result = struct
         | _ -> false
 end
 
-module Path = struct
-    type t = resolution list
-
-    let terminal_resolution path = CCList.rev path
-        |> CCList.head_opt
-end
-
 module Tree = struct
     type node =
         | Terminal of Result.t
-        | Resolution of resolution * Context.t
+        | Resolution of ProofStep.t * State.t
     type t = node Data.Tree.tree
 
     let expand_node strategy = function
         | Terminal _ -> []
-        | Resolution (resolution, context) ->
-            if Obligation.is_predicate_satisfied (Context.obligation context) then
+        | Resolution (_, state) ->
+            if Obligation.is_predicate_satisfied (State.obligation state) then
                 [Terminal Result.Success]
             else
-                let results = strategy context
-                |> CCList.map (fun (r, context') ->
-                    let resolution' = extend resolution r in
-                        Resolution (resolution', context')
+                let results = strategy state
+                |> CCList.map (fun (step, state) -> Resolution (step, state)
                 ) in
                 if (CCList.length results) == 0 then [Terminal Result.Failure] else results
 
@@ -63,7 +35,7 @@ module Tree = struct
         else false
 
     let of_query query =
-        let node = Resolution (initial, Context.of_query query) in
+        let node = Resolution (ProofStep.initial, State.of_query query) in
             Data.Tree.leaf node
 
     let rec resolve_zipper strategy zipper = match Data.Tree.find is_expandable zipper with
@@ -95,6 +67,4 @@ module Tree = struct
         |> Data.Tree.paths
         |> CCList.filter successful_branch
         |> CCList.map path_of_branch
-        |> CCList.filter_map Path.terminal_resolution
-        |> CCList.map (fun r -> r.substitution)
 end

@@ -9,4 +9,6 @@ val is_predicate_satisfied : t -> bool
 
 val empty : t
 
+val join : t -> t -> t
+
 val to_string : t -> string

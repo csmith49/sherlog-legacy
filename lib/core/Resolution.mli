@@ -1,12 +1,4 @@
-type t = {
-    subobligation : Predicate.t;
-    substitution : Substitution.t;
-}
-type resolution = t
-type strategy = Context.t -> (resolution * Context.t) list
-
-val extend : t -> t -> t
-val initial : t
+type strategy = State.t -> (ProofStep.t * State.t) list
 
 module Result : sig
     type t =
@@ -16,15 +8,10 @@ module Result : sig
     val is_successful : t -> bool
 end
 
-module Path : sig
-    type t
-    val terminal_resolution : t -> resolution option
-end
-
 module Tree : sig
     type t
 
     val of_query : Predicate.t list -> t
     val resolve : strategy -> t -> t
-    val solutions : t -> Substitution.t list
+    val solutions : t -> ProofStep.sequence list
 end

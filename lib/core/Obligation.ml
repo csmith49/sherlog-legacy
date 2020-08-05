@@ -18,6 +18,8 @@ let is_predicate_satisfied = function
 
 let empty = []
 
+let join = (@)
+
 let to_string ob = ob
     |> CCList.map Predicate.to_string
     |> CCString.concat ", "
