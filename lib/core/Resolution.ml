@@ -67,4 +67,5 @@ module Tree = struct
         |> Data.Tree.paths
         |> CCList.filter successful_branch
         |> CCList.map path_of_branch
+        |> CCList.map ProofStep.Derivation.of_step_list
 end

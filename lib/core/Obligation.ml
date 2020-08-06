@@ -1,6 +1,6 @@
 type t = Predicate.t list
 
-let of_query q = q
+let of_query q = q |> Query.to_predicate_list
 
 let substitute ob sub = ob
     |> CCList.map (fun p -> Predicate.substitute p sub)

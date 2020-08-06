@@ -11,7 +11,7 @@ end
 module Tree : sig
     type t
 
-    val of_query : Predicate.t list -> t
+    val of_query : Query.t -> t
     val resolve : strategy -> t -> t
-    val solutions : t -> ProofStep.sequence list
+    val solutions : t -> ProofStep.Derivation.t list
 end

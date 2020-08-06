@@ -21,3 +21,4 @@ val substitute : t -> Substitution.t -> t
 
 (* construction *)
 val make : string -> Term.t list -> t
+val make_meta : string -> Term.t list -> Term.t list -> t

@@ -13,4 +13,4 @@ let rec split_lines = function
 
 let process_lines lines =
   let query, clauses = split_lines lines in
-  (query, Core.Program.of_clause_list clauses)
+  (Core.Query.of_predicate_list query, Core.Program.of_clause_list clauses)

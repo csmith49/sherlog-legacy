@@ -26,3 +26,7 @@ let rec apply term sub = match term with
     | Term.Function (f, args) ->
         let args' = CCList.map (fun t -> apply t sub) args in Term.Make.apply f args'
     | _ -> term
+
+let lookup_identifier id sub =
+    let term = Term.Variable id in
+    apply term sub

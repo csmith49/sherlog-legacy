@@ -17,7 +17,7 @@
 %token <string> SYMBOL
 %token <string> VARIABLE
 
-%start <(Predicate.t list * Program.t)> program
+%start <(Query.t * Program.t)> program
 
 %%
 

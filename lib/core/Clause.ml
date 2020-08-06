@@ -53,13 +53,14 @@ let existential_variables clause =
         e_vars |> IdSet.to_list
 
 (* todo - cache this *)
-let is_existential clause = CCList.is_empty (existential_variables clause)
+let is_existential clause = not (CCList.is_empty (existential_variables clause))
 
 let resolve state clause = let clause = freshen clause in
     match state |> ProofState.discharge_predicate with
         | None -> []
         | Some (predicate, state) ->
             if is_existential clause then
+                let _ = print_endline "EXISTENTIAL" in
                 let cached_steps = ProofState.cached_step predicate state in
                 let intro_step = ProofState.intro_step predicate state |> CCOpt.to_list in
                     intro_step @ cached_steps

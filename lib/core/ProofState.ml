@@ -18,7 +18,7 @@ let set_obligation obligation state = {
 }
 
 let initial = {
-    obligation = Obligation.of_query [];
+    obligation = [] |> Query.of_predicate_list |> Obligation.of_query;
     existential_context = [];
 }
 let of_query query = initial |> set_obligation (Obligation.of_query query)
@@ -40,3 +40,10 @@ let intro_step predicate state = match Distribution.resolve predicate with
         let state = state |> extend_existential_context predicate in
             Some (step, state)
     | None -> None
+
+let to_verbose_string state = [
+    "---< P STATE >---";
+    "\tObl.: " ^ (state.obligation |> Obligation.to_string);
+    "\tECtx: " ^ (state.existential_context |> CCList.map Predicate.to_string |> CCString.concat " | ");
+    "-----------------";
+] |> CCString.concat "\n"
