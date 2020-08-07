@@ -40,8 +40,8 @@ predicate : s = SYMBOL; LPARENS; ts = term_list; RPARENS { `Predicate (s, ts) } 
 predicate_list : ps = separated_list(COMMA, predicate) { ps } ;
 
 line :
-    | fact = predicate; PERIOD { `Rule (fact, []) }
-    | head = predicate; ARROW; body = predicate_list; PERIOD { `Rule (head, body) }
+    | fact = predicate; PERIOD { `Rule (`Conjunction [], fact, []) }
+    | head = predicate; ARROW; body = predicate_list; PERIOD { `Rule (`Conjunction [], head, body) }
     | qs = predicate_list; QMARK { `Query qs }
     ;
 

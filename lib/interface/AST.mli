@@ -1,7 +1,7 @@
 module Basic : sig
     type t = line list
     and line = [
-        | `Rule of predicate * predicate list
+        | `Rule of cost * predicate * predicate list
         | `Query of predicate list
     ]
     and predicate = [
@@ -14,6 +14,12 @@ module Basic : sig
         | `Float of float
         | `Atom of string
         | `Function of string * term list
+    ]
+    and cost = [
+        | `Conjunction of conjunct list
+    ]
+    and conjunct = [
+        | `Sim of string * string * term list
     ]
 
     val compile : t -> (Core.Query.t * Core.Program.t)
