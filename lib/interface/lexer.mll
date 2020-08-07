@@ -16,6 +16,7 @@ rule read = parse
     | "]" { RBRACKET }
     | ";" { SEMICOLON }
     | ":-" { ARROW }
+    | "|" { MID }
     | "." { PERIOD }
     | "," { COMMA }
     | "?" { QMARK }

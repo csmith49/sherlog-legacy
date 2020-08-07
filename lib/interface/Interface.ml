@@ -6,4 +6,5 @@ let parse_file filename =
         |> (fun f -> really_input_string f (in_channel_length f)) in
     file_contents
         |> parse_ast
+        |> CCOpt.map AST.Extended.simplify
         |> CCOpt.map AST.Basic.compile

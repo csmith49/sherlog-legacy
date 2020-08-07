@@ -1,4 +1,5 @@
 %{
+    let lift = CCList.map AST.Extended.lift_term
 %}
 
 %token LPARENS
@@ -6,6 +7,7 @@
 %token LBRACKET
 %token RBRACKET
 %token SEMICOLON
+%token MID
 %token ARROW
 %token PERIOD
 %token COMMA
@@ -19,7 +21,7 @@
 %token <string> SYMBOL
 %token <string> VARIABLE
 
-%start <AST.Basic.t> program
+%start <AST.Extended.t> program
 
 %%
 
@@ -32,17 +34,33 @@ term :
     | x = VARIABLE { `Variable x }
     | f = SYMBOL; LPARENS; args = separated_list(COMMA, term); RPARENS { `Function (f, args) }
     ;
+terms : ts = separated_list(COMMA, term) { ts } ;
 
-term_list : ts = separated_list(COMMA, term) { ts } ;
+dterm : 
+    | TRUE { `Boolean true }
+    | FALSE { `Boolean false }
+    | f = FLOAT { `Float f }
+    | i = INTEGER { `Integer i} 
+    | s = SYMBOL { `Atom s }
+    | x = VARIABLE { `Variable x }
+    | f = SYMBOL; LPARENS; args = separated_list(COMMA, term); RPARENS { `Function (f, args) }
+    | d = SYMBOL; LBRACKET; args = terms; RBRACKET { `Sample (d, args, []) }
+    | d = SYMBOL; LBRACKET; args = terms; SEMICOLON; es = terms; RBRACKET { `Sample (d, args, es) }
+    ;
+dterms : dts = separated_list(COMMA, dterm) { dts } ;
 
-predicate : s = SYMBOL; LPARENS; ts = term_list; RPARENS { `Predicate (s, ts) } ;
+predicate : s = SYMBOL; LPARENS; ts = terms; RPARENS { `Predicate (s, ts) } ;
+predicates : ps = separated_list(COMMA, predicate) { ps } ;
 
-predicate_list : ps = separated_list(COMMA, predicate) { ps } ;
-
+dpredicate : 
+    | s = SYMBOL; LPARENS; ts = terms; RPARENS { `DeltaPredicate (s, lift ts) }
+    | s = SYMBOL; LPARENS; ts = terms; MID; dts = dterms; RPARENS { `DeltaPredicate (s, (lift ts) @ dts) }
+    ;
+    
 line :
-    | fact = predicate; PERIOD { `Rule (`Conjunction [], fact, []) }
-    | head = predicate; ARROW; body = predicate_list; PERIOD { `Rule (`Conjunction [], head, body) }
-    | qs = predicate_list; QMARK { `Query qs }
+    | fact = dpredicate; PERIOD { `DeltaRule (fact, []) }
+    | qs = predicates; QMARK { `Query qs }
+    | head = dpredicate; ARROW; body = predicates; PERIOD { `DeltaRule (head, body) }
     ;
 
 program : cs = list(line); EOF { cs } ;
