@@ -12,6 +12,9 @@ rule read = parse
     | whitespace { read lexbuf }
     | "(" { LPARENS }
     | ")" { RPARENS }
+    | "[" { LBRACKET }
+    | "]" { RBRACKET }
+    | ";" { SEMICOLON }
     | ":-" { ARROW }
     | "." { PERIOD }
     | "," { COMMA }

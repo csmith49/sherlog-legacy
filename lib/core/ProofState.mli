@@ -16,6 +16,5 @@ val unify_with_existential_context : Predicate.t -> t -> Substitution.t list
 
 (* different kinds of steps *)
 val cached_step : Predicate.t -> t -> (ProofStep.t * t) list
-val intro_step : Predicate.t -> t -> (ProofStep.t * t) option
 
 val to_verbose_string : t -> string

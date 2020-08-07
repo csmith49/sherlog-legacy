@@ -1,0 +1,2 @@
+flip(coin, bern[p ; coin]).
+flip(coin, true)?

@@ -4,7 +4,6 @@ type t
 (* access *)
 val symbol : t -> symbol
 val arguments : t -> Term.t list
-val event_space : t -> Term.t list
 val variables : t -> Data.Identifier.t list
 
 (* printing *)
@@ -21,4 +20,3 @@ val substitute : t -> Substitution.t -> t
 
 (* construction *)
 val make : string -> Term.t list -> t
-val make_meta : string -> Term.t list -> Term.t list -> t

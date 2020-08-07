@@ -1,9 +1,11 @@
 %{
-    open Core
 %}
 
 %token LPARENS
 %token RPARENS
+%token LBRACKET
+%token RBRACKET
+%token SEMICOLON
 %token ARROW
 %token PERIOD
 %token COMMA
@@ -17,30 +19,30 @@
 %token <string> SYMBOL
 %token <string> VARIABLE
 
-%start <(Query.t * Program.t)> program
+%start <AST.Basic.t> program
 
 %%
 
 term :
-    | TRUE { Term.Make.bool true }
-    | FALSE { Term.Make.bool false }
-    | f = FLOAT { Term.Make.float f }
-    | i = INTEGER { Term.Make.int i} 
-    | s = SYMBOL {Term.Make.atom s }
-    | x = VARIABLE { Term.Make.var x }
-    | f = SYMBOL; LPARENS; args = separated_list(COMMA, term); RPARENS { Term.Make.apply f args }
+    | TRUE { `Boolean true }
+    | FALSE { `Boolean false }
+    | f = FLOAT { `Float f }
+    | i = INTEGER { `Integer i} 
+    | s = SYMBOL { `Atom s }
+    | x = VARIABLE { `Variable x }
+    | f = SYMBOL; LPARENS; args = separated_list(COMMA, term); RPARENS { `Function (f, args) }
     ;
 
 term_list : ts = separated_list(COMMA, term) { ts } ;
 
-predicate : s = SYMBOL; LPARENS; ts = term_list; RPARENS { Predicate.make s ts } ;
+predicate : s = SYMBOL; LPARENS; ts = term_list; RPARENS { `Predicate (s, ts) } ;
 
 predicate_list : ps = separated_list(COMMA, predicate) { ps } ;
 
 line :
-    | fact = predicate; PERIOD { Source.EDB (Clause.fact fact) }
-    | head = predicate; ARROW; body = predicate_list; PERIOD { Source.EDB (Clause.make head body) }
-    | qs = predicate_list; QMARK { Source.IDB qs }
+    | fact = predicate; PERIOD { `Rule (fact, []) }
+    | head = predicate; ARROW; body = predicate_list; PERIOD { `Rule (head, body) }
+    | qs = predicate_list; QMARK { `Query qs }
     ;
 
-program : cs = list(line); EOF { Source.process_lines cs } ;
+program : cs = list(line); EOF { cs } ;

@@ -1,6 +1,7 @@
 type t = {
     head : Predicate.t;
     body : Predicate.t list;
+    cost : Formula.t; (* by construction, formula only contains variables in head/body *)
 }
 
 let head clause = clause.head
@@ -18,6 +19,7 @@ let to_string clause =
 let substitute clause substitution = {
     head = Predicate.substitute clause.head substitution;
     body = clause.body |> CCList.map (fun p -> Predicate.substitute p substitution);
+    cost = Formula.substitute clause.cost substitution;
 }
   
 let freshen_count = ref 1
@@ -44,52 +46,23 @@ let apply obligation clause = match Obligation.discharge_predicate obligation wi
         | None -> None
     end
 
-module IdSet = CCSet.Make(Data.Identifier)
-
-let existential_variables clause =
-    let h_vars = clause.head |> Predicate.variables |> IdSet.of_list in
-    let b_vars = clause.body |> CCList.flat_map Predicate.variables |> IdSet.of_list in
-    let e_vars = IdSet.diff h_vars b_vars in
-        e_vars |> IdSet.to_list
-
-(* todo - cache this *)
-let is_existential clause = not (CCList.is_empty (existential_variables clause))
-
 let resolve state clause = let clause = freshen clause in
     match state |> ProofState.discharge_predicate with
         | None -> []
         | Some (predicate, state) ->
-            if is_existential clause then
-                let _ = print_endline "EXISTENTIAL" in
-                let cached_steps = ProofState.cached_step predicate state in
-                let intro_step = ProofState.intro_step predicate state |> CCOpt.to_list in
-                    intro_step @ cached_steps
-            else begin match Predicate.unify predicate clause.head with
+            let cached_steps = ProofState.cached_step predicate state in
+            begin match Predicate.unify predicate clause.head with
                 | Some substitution ->
                     let obligation = state
                         |> ProofState.obligation
                         |> Obligation.add_all clause.body
                         |> fun ob -> Obligation.substitute ob substitution in
-                    let step = ProofStep.make_free predicate substitution in
-                    [ (step, state |> ProofState.set_obligation obligation) ]
+                    let step = ProofStep.make predicate substitution clause.cost in
+                    (step, state |> ProofState.set_obligation obligation) :: cached_steps
                 | None -> []
             end
-(* 
-let resolve context clause =
-    let clause = freshen clause in match context |> Context.obligation |> Obligation.discharge_predicate with
-        | None -> None
-        | Some (predicate, obligation) -> begin match Predicate.unify predicate clause.head with
-            | Some substitution ->
-                let obligation = obligation
-                    |> Obligation.add_all clause.body
-                    |> fun ob -> Obligation.substitute ob substitution in
-                let resolution = {
-                    Resolution.subobligation = predicate;
-                    substitution = substitution;
-                } in
-                Some (resolution, context |> Context.set_obligation obligation)
-            | _ -> None
-        end *)
 
-let make head body = {head = head; body = body}
-let fact pred = {head = pred; body = []}
+let make head body = {head = head; body = body; cost = Formula.empty}
+let fact pred = {head = pred; body = []; cost = Formula.empty}
+
+let add_cost cost clause = {clause with cost = Formula.conjoin cost clause.cost}

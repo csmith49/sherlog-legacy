@@ -34,13 +34,6 @@ let cached_step predicate state = state.existential_context
     |> CCList.map (ProofStep.make_free predicate)
     |> CCList.map (fun step -> (step, state))
 
-let intro_step predicate state = match Distribution.resolve predicate with
-    | Some cost -> 
-        let step = ProofStep.make predicate Substitution.empty cost in
-        let state = state |> extend_existential_context predicate in
-            Some (step, state)
-    | None -> None
-
 let to_verbose_string state = [
     "---< P STATE >---";
     "\tObl.: " ^ (state.obligation |> Obligation.to_string);
