@@ -6,6 +6,7 @@ let to_clause_list p = p
 let to_string program = program
     |> to_clause_list
     |> CCList.map Clause.to_string
+    |> CCList.map (fun cs -> cs ^ ".")
     |> CCString.concat "\n"
 
 let resolve obligation program = program |> CCList.filter_map (Clause.apply obligation)

@@ -44,3 +44,5 @@ let split n id = CCList.range 0 n
         index = index;
         context = id.context;
     })
+
+let printer format id = CCFormat.string format (to_string id)

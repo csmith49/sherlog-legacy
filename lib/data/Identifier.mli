@@ -14,3 +14,5 @@ val split : int -> t -> t list
 
 val equal : t -> t -> bool
 val compare : t -> t -> int
+
+val printer : t CCFormat.printer

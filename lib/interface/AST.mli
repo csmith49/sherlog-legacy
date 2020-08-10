@@ -16,10 +16,12 @@ module Basic : sig
         | `Function of string * term list
     ]
     and cost = [
-        | `Conjunction of conjunct list
+        | `Formula of conjunct list
     ]
     and conjunct = [
-        | `Sim of string * string * term list
+        | `Sample of string * string * term list * term list
+        | `Eq of term * term
+        | `LEq of term * term
     ]
 
     val compile : t -> (Core.Query.t * Core.Program.t)
@@ -29,6 +31,7 @@ module Extended : sig
     type t = line list
     and line = [
         | `DeltaRule of delta_predicate * predicate list
+        | `LogicalRule of predicate * cost
         | `Query of predicate list
     ]
     and delta_predicate = [
@@ -41,7 +44,7 @@ module Extended : sig
         | `Float of float
         | `Atom of string
         | `Function of string * term list
-        | `Sample of string * term list * term list
+        | `Distribution of string * term list * term list
     ]
     and predicate = [
         | `Predicate of string * term list
@@ -55,10 +58,12 @@ module Extended : sig
         | `Function of string * term list
     ]
     and cost = [
-        | `Conjunction of conjunct list
+        | `Formula of conjunct list
     ]
     and conjunct = [
-        | `Sim of string * string * term list
+        | `Sample of string * string * term list * term list
+        | `Eq of term * term
+        | `LEq of term * term
     ]
 
     val lift_term : term -> delta_term

@@ -1,0 +1,14 @@
+temperature(M | normal[m, s ; temperature, M]) :- is_mouse(M).
+
+attack(M, T | bern[p1 ; attack, M, T]) :- sniffs(M', M, T'), next(T', T).
+attack(M, T | bern[p2 ; attack, M, T]) :- is_significant(F, m, s), temperature(M, F), is_close(M, M', T).
+
+is_mouse(mouse1).
+is_mouse(mouse2).
+sniffs(mouse2, mouse1, t1).
+is_close(mouse1, mouse2, t2).
+next(t1, t2).
+
+is_significant(T, m, s) <- abs(minus(T, m)) >= times(2, s).
+
+attack(mouse1, T, true)?

@@ -13,8 +13,12 @@ let variables clause =
 
 let to_string clause =
     let head = Predicate.to_string clause.head in
-    let body = clause.body |> CCList.map Predicate.to_string |> CCString.concat ", " in
-    if CCString.equal body "" then head else head ^ " :- " ^ body
+    let body = if CCList.is_empty clause.body then "" else
+        let preds = clause.body |> CCList.map Predicate.to_string |> CCString.concat ", " in
+            " :- " ^ preds in
+    let cost = if Formula.is_empty clause.cost then "" else
+        (Formula.to_string clause.cost) ^ " : " in
+    cost ^ head ^ body
 
 let substitute clause substitution = {
     head = Predicate.substitute clause.head substitution;
@@ -47,18 +51,16 @@ let apply obligation clause = match Obligation.discharge_predicate obligation wi
     end
 
 let resolve state clause = let clause = freshen clause in
-    match state |> ProofState.discharge_predicate with
+    match state |> Proof.State.discharge_predicate with
         | None -> []
         | Some (predicate, state) ->
-            let cached_steps = ProofState.cached_step predicate state in
             begin match Predicate.unify predicate clause.head with
                 | Some substitution ->
-                    let obligation = state
-                        |> ProofState.obligation
-                        |> Obligation.add_all clause.body
-                        |> fun ob -> Obligation.substitute ob substitution in
-                    let step = ProofStep.make predicate substitution clause.cost in
-                    (step, state |> ProofState.set_obligation obligation) :: cached_steps
+                    let step = Proof.Step.make predicate substitution clause.cost in
+                    let state = state
+                        |> Proof.State.extend_obligation clause.body
+                        |> fun s -> Proof.State.substitute s substitution in
+                    [(step, state)]
                 | None -> []
             end
 

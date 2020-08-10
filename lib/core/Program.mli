@@ -5,6 +5,6 @@ val to_clause_list : t -> Clause.t list
 
 val to_string : t -> string
 
-val linear_strategy : t -> ProofState.t -> (ProofStep.t * ProofState.t) list
+val linear_strategy : t -> Proof.strategy
 
 val resolve : Obligation.t -> t -> Obligation.t list

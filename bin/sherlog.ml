@@ -18,10 +18,10 @@ let _ = match Interface.parse_file !filepath with
             (Core.Query.to_string query);
          ] |> CCString.concat "\n" |> print_endline in
         let strategy = Core.Program.linear_strategy program in
-        let tree = Core.Resolution.Tree.of_query query |> Core.Resolution.Tree.resolve strategy in
+        let tree = Core.Proof.Tree.of_query query |> Core.Proof.Tree.resolve strategy in
         let solutions = tree 
-            |> Core.Resolution.Tree.solutions 
-            |> CCList.map Core.ProofStep.Derivation.summary in
+            |> Core.Proof.Tree.solutions 
+            |> CCList.map Core.Proof.Step.Derivation.summary in
         let _ = [
             "---< RESULTS >---";
         ] @ (
