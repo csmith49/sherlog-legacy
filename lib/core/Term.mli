@@ -12,6 +12,8 @@ val equal : t -> t -> bool
 
 val occurs : Data.Identifier.t -> t -> bool
 
+val is_ground : t -> bool
+
 module Make : sig
     val var : string -> t
     val int : int -> t

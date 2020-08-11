@@ -31,6 +31,11 @@ let rec occurs id term = match term with
     | Function (_, args) -> CCList.exists (occurs id) args
     | _ -> false
 
+let rec is_ground = function
+    | Variable _ -> false
+    | (Integer _ | Float _ | Boolean _ | Atom _) -> true
+    | Function (_, args) -> CCList.for_all is_ground args
+
 module Make = struct
     let var x = Variable (x |> Data.Identifier.of_string)
     let int i = Integer i

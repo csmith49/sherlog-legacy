@@ -1,24 +1,29 @@
 module State = struct
     type t = {
         obligation : Obligation.t;
+        cache : Predicate.t list;
     }
 
     let obligation state = state.obligation
-
-    let extend_obligation preds state = {
+    let extend_obligation preds state = { state with
         obligation = Obligation.add_all preds state.obligation;
     }
-
-    let substitute state sub = {
-        obligation = Obligation.substitute state.obligation sub;
+    let set_obligation obligation state = { state with
+        obligation = obligation;
     }
 
-    let set_obligation obligation _ = {
-        obligation = obligation;
+    let cache state = state.cache
+    let extend_cache predicate state = { state with
+        cache = predicate :: state.cache;
+    }
+
+    let substitute state sub = { state with
+        obligation = Obligation.substitute state.obligation sub;
     }
 
     let initial = {
         obligation = [] |> Query.of_predicate_list |> Obligation.of_query;
+        cache = [];
     }
 
     let of_query query = initial |> set_obligation (Obligation.of_query query)

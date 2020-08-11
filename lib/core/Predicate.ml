@@ -18,6 +18,8 @@ let variables pred = pred.arguments
         | Term.Variable x -> Some x
         | _ -> None
     )
+let is_ground pred = pred.arguments
+    |> CCList.for_all Term.is_ground
 
 let equal left right = (symbol_equal left.symbol right.symbol) &&
     (CCList.equal Term.equal left.arguments right.arguments)

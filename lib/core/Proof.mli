@@ -5,6 +5,9 @@ module State : sig
     val extend_obligation : Predicate.t list -> t -> t
     val set_obligation : Obligation.t -> t -> t
 
+    val cache : t -> Predicate.t list
+    val extend_cache : Predicate.t -> t -> t
+
     val substitute : t -> Substitution.t -> t
 
     val initial : t

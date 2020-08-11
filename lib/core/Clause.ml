@@ -56,7 +56,14 @@ let resolve state clause = let clause = freshen clause in
         | Some (predicate, state) ->
             begin match Predicate.unify predicate clause.head with
                 | Some substitution ->
+                    (* check if the result is to be cached *)
+                    let result = Predicate.substitute predicate substitution in
+                    let state = if Predicate.is_ground result then
+                        Proof.State.extend_cache result state
+                    else state in
+                    (* derive next step *)
                     let step = Proof.Step.make predicate substitution clause.cost in
+                    (* update obligation *)
                     let state = state
                         |> Proof.State.extend_obligation clause.body
                         |> fun s -> Proof.State.substitute s substitution in
