@@ -1,0 +1,22 @@
+# taken from PPDL paper (fig. 2)
+
+earthquake(C | bern[0.01 ; earthquake, C]) :- city(C, R).
+
+unit(H, C) :- house(H, C).
+unit(B, C) :- business(B, C).
+
+burglary(X, C | bern[R ; burglary, X, C]) :- unit(X, C), city(C, R).
+
+trigger(X | bern[0.6 ; trigger, X]) :- unit(X, C), earthquake(C, true).
+trigger(X | bern[0.9 ; trigger, X]) :- burglary(X, C, true).
+
+alarm(X) :- trigger(X, true).
+
+# fake observations to make the test pass
+
+city(austin, 0.001).
+house(home1, austin).
+business(business1, austin).
+
+# query
+alarm(home1)?

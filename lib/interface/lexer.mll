@@ -1,19 +1,41 @@
 {
     open Parser
+
+    exception ParseError of string
 }
 
-let whitespace = [' ' '\t' '\n']+
-let digit = ['0'-'9']
-let int = '-'? digit+
-let letter = ['a'-'z' 'A'-'Z']
-let id = letter+
+(* whitespace *)
+let space = ' '
+let tab = '\t'
+let newline = '\n'
 
+(* alphas *)
+let lower = ['a'-'z']
+let upper = ['A'-'Z']
+
+(* symbols *)
+let prime = '''
+let underscore = '_'
+let period = '.'
+let comment_start = '#'
+
+(* numbers *)
+let digit = ['0'-'9']
+let neg = '-'
+
+(* lexing rules *)
 rule read = parse
-    | whitespace { read lexbuf }
+    (* whitespace *)
+    | (space | tab )+ { read lexbuf }
+    | newline { Lexing.new_line lexbuf; read lexbuf }
+    (* comment *)
+    | comment_start [^'\n']* { read lexbuf }
+    (* brackets *)
     | "(" { LPARENS }
     | ")" { RPARENS }
     | "[" { LBRACKET }
     | "]" { RBRACKET }
+    (* symbols *)
     | ";" { SEMICOLON }
     | ":-" { ARROW }
     | "<-" { IMPLIES }
@@ -21,14 +43,22 @@ rule read = parse
     | "|" { MID }
     | "." { PERIOD }
     | "," { COMMA }
+    (* queries *)
     | "?" { QMARK }
+    (* constraints *)
     | "==" { EQUAL }
     | "<=" { LEQ }
     | ">=" { GEQ }
+    (* eof *)
     | eof { EOF }
+    (* boolean *)
     | "true" { TRUE }
     | "false" { FALSE }
-    | '-'? ['0'-'9']+ '.' ['0'-'9']+ { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
-    | '-'? ['0'-'9']+ { INTEGER (int_of_string (Lexing.lexeme lexbuf)) }
-    | ['A'-'Z'][''']? { VARIABLE (Lexing.lexeme lexbuf)}
-    | ['a'-'z']['a'-'z' '_' '0'-'9']* { SYMBOL (Lexing.lexeme lexbuf) }
+    (* numbers *)
+    | neg? digit+ period digit+ { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
+    | neg? digit+ { INTEGER (int_of_string (Lexing.lexeme lexbuf)) }
+    (* symbols and variables *)
+    | upper (lower | upper | digit | underscore)* prime* { VARIABLE (Lexing.lexeme lexbuf)}
+    | lower (lower | upper | digit | underscore)* { SYMBOL (Lexing.lexeme lexbuf) }
+    (* escape case *)
+    | _ { raise (ParseError ("Found " ^ (Lexing.lexeme lexbuf) ^ ": don't know how to handle")) }

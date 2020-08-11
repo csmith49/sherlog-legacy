@@ -1,3 +1,0 @@
-flip(coin | bern[p ; coin]).
-result(coin, heads) :- flip(coin, true).
-flip(coin, heads)?
