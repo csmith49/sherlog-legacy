@@ -1,4 +1,4 @@
 type t
 
 (* cost generation *)
-val resolve : Predicate.t -> Formula.t option
+val resolve : Atom.t -> Formula.t option

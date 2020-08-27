@@ -35,7 +35,7 @@ term :
     | FALSE { `Boolean false }
     | f = FLOAT { `Float f }
     | i = INTEGER { `Integer i} 
-    | s = SYMBOL { `Atom s }
+    | s = SYMBOL { `Constant s }
     | x = VARIABLE { `Variable x }
     | f = SYMBOL; LPARENS; args = separated_list(COMMA, term); RPARENS { `Function (f, args) }
     ;
@@ -46,7 +46,7 @@ dterm :
     | FALSE { `Boolean false }
     | f = FLOAT { `Float f }
     | i = INTEGER { `Integer i} 
-    | s = SYMBOL { `Atom s }
+    | s = SYMBOL { `Constant s }
     | x = VARIABLE { `Variable x }
     | f = SYMBOL; LPARENS; args = separated_list(COMMA, term); RPARENS { `Function (f, args) }
     | d = SYMBOL; LBRACKET; args = terms; RBRACKET { `Distribution (d, args, []) }

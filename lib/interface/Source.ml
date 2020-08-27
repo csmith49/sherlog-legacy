@@ -1,6 +1,6 @@
 type line =
   | EDB of Core.Clause.t
-  | IDB of Core.Predicate.t list
+  | IDB of Core.Atom.t list
 
 let rec split_lines = function
   | [] -> ([], [])
@@ -13,4 +13,4 @@ let rec split_lines = function
 
 let process_lines lines =
   let query, clauses = split_lines lines in
-  (Core.Query.of_predicate_list query, Core.Program.of_clause_list clauses)
+  (Core.Query.of_atom_list query, Core.Program.of_clause_list clauses)

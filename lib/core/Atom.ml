@@ -11,22 +11,22 @@ type t = {
     arguments : Term.t list;
 }
 
-let symbol pred = pred.symbol
-let arguments pred = pred.arguments
-let variables pred = pred.arguments
+let symbol atom = atom.symbol
+let arguments atom = atom.arguments
+let variables atom = atom.arguments
     |> CCList.filter_map (fun arg -> match arg with
         | Term.Variable x -> Some x
         | _ -> None
     )
-let is_ground pred = pred.arguments
+let is_ground atom = atom.arguments
     |> CCList.for_all Term.is_ground
 
 let equal left right = (symbol_equal left.symbol right.symbol) &&
     (CCList.equal Term.equal left.arguments right.arguments)
 
-let to_string predicate =
-    let symbol = predicate.symbol.name in
-    let arguments' = predicate.arguments |> CCList.map Term.to_string |> CCString.concat ", " in
+let to_string atom =
+    let symbol = atom.symbol.name in
+    let arguments' = atom.arguments |> CCList.map Term.to_string |> CCString.concat ", " in
     symbol ^ "(" ^ arguments' ^ ")"
 
 let unify left right = 
@@ -35,8 +35,8 @@ let unify left right =
     let equations = argument_eqs in
         Unification.solve equations
 
-let substitute pred sub = {pred with
-    arguments = pred.arguments |> CCList.map (fun tm -> Substitution.apply tm sub);
+let substitute atom sub = {atom with
+    arguments = atom.arguments |> CCList.map (fun tm -> Substitution.apply tm sub);
 }
 
 let make name args =

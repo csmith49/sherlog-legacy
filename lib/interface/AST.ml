@@ -12,7 +12,7 @@ module Basic = struct
         | `Integer of int
         | `Boolean of bool
         | `Float of float
-        | `Atom of string
+        | `Constant of string
         | `Function of string * term list
     ]
     and cost = [
@@ -29,15 +29,15 @@ module Basic = struct
         | `Integer i -> Core.Term.Make.int i
         | `Boolean b -> Core.Term.Make.bool b
         | `Float f -> Core.Term.Make.float f
-        | `Atom s -> Core.Term.Make.atom s
+        | `Constant s -> Core.Term.Make.const s
         | `Function (f, args) -> 
             let args = CCList.map compile_term args in
                 Core.Term.Make.apply f args
 
-    let compile_predicate : predicate -> Core.Predicate.t = function
+    let compile_predicate : predicate -> Core.Atom.t = function
         | `Predicate (name, args) ->
             let args = CCList.map compile_term args in
-                Core.Predicate.make name args
+                Core.Atom.make name args
 
     let compile_conjunct : conjunct -> Core.Formula.t = function
         | `Sample (var, dist, args, event_space) ->
@@ -73,7 +73,7 @@ module Basic = struct
     let compile lines = lines
         |> CCList.partition_map compile_line
         |> CCPair.map1 CCList.flatten
-        |> CCPair.map1 Core.Query.of_predicate_list
+        |> CCPair.map1 Core.Query.of_atom_list
         |> CCPair.map2 Core.Program.of_clause_list
 end
 
@@ -92,7 +92,7 @@ module Extended = struct
         | `Integer of int
         | `Boolean of bool
         | `Float of float
-        | `Atom of string
+        | `Constant of string
         | `Function of string * term list
         | `Distribution of string * term list * term list
     ]
@@ -104,7 +104,7 @@ module Extended = struct
         | `Integer of int
         | `Boolean of bool
         | `Float of float
-        | `Atom of string
+        | `Constant of string
         | `Function of string * term list
     ]
     and cost = [
@@ -117,13 +117,13 @@ module Extended = struct
     ]
 
     let lift_term = function
-        | (`Variable _ | `Integer _ | `Boolean _ | `Float _ | `Atom _ | `Function _ ) as t -> t
+        | (`Variable _ | `Integer _ | `Boolean _ | `Float _ | `Constant _ | `Function _ ) as t -> t
 
     let simplify_delta_rule = function
         | `DeltaRule (head, body) -> begin match head with
             | `DeltaPredicate (name, arguments) ->
                 let arguments', cost = CCList.mapi (fun i -> fun tm -> match tm with
-                    | (`Variable _ | `Integer _ | `Boolean _ | `Float _ | `Atom _ | `Function _) as t -> (t, None)
+                    | (`Variable _ | `Integer _ | `Boolean _ | `Float _ | `Constant _ | `Function _) as t -> (t, None)
                     | `Distribution (d, p, q) ->
                         let variable = "Sample_" ^ (string_of_int i) in
                         let cost = `Sample (variable, d, p, q) in

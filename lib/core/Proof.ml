@@ -1,7 +1,7 @@
 module State = struct
     type t = {
         obligation : Obligation.t;
-        cache : Predicate.t list;
+        cache : Atom.t list;
     }
 
     let obligation state = state.obligation
@@ -22,13 +22,13 @@ module State = struct
     }
 
     let initial = {
-        obligation = [] |> Query.of_predicate_list |> Obligation.of_query;
+        obligation = [] |> Query.of_atom_list |> Obligation.of_query;
         cache = [];
     }
 
     let of_query query = initial |> set_obligation (Obligation.of_query query)
     
-    let discharge_predicate state = match Obligation.discharge_predicate state.obligation with
+    let discharge_atom state = match Obligation.discharge_atom state.obligation with
         | Some (predicate, obligation) -> Some (predicate, state |> set_obligation obligation)
         | _ -> None
 end
@@ -36,18 +36,18 @@ end
 module Step = struct
     type t = {
         cost : Formula.t;
-        subobligation : Predicate.t;
+        subobligation : Atom.t;
         substitution : Substitution.t;
     }
     type step = t
 
-    let make pred sub cost = {
+    let make atom sub cost = {
         cost = cost;
-        subobligation = pred;
+        subobligation = atom;
         substitution = sub;
     }
     
-    let initial = make (Predicate.make "root" []) Substitution.empty Formula.empty
+    let initial = make (Atom.make "root" []) Substitution.empty Formula.empty
 
     module Derivation = struct
         type t = step list
@@ -88,7 +88,7 @@ module Tree = struct
     let expand_node strategy = function
         | Terminal _ -> []
         | Resolution (_, state) ->
-            if Obligation.is_predicate_satisfied (State.obligation state) then
+            if Obligation.is_satisfied (State.obligation state) then
                 [Terminal Success]
             else
                 let results = strategy state

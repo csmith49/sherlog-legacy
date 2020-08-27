@@ -1,7 +1,7 @@
 type t
 
-val to_predicate_list : t -> Predicate.t list
-val of_predicate_list : Predicate.t list -> t
+val to_atom_list : t -> Atom.t list
+val of_atom_list : Atom.t list -> t
 
 val to_string : t -> string
 

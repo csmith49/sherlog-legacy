@@ -10,4 +10,4 @@ results(C, tails) :- flip(C, false).
 is_coin(coin1).
 
 #query
-results(coin1, heads)?
+results(X, Y)?

@@ -9,7 +9,7 @@ active_virus(X | bern[0.5 ; X]) :- has_virus(X).
 active_virus(X, true) :- virus_source(X).
 
 virus_source(computer1).
-virus_source(computer2).
+
 message(test1, computer1, computer2).
 message(test2, computer2, computer3).
 

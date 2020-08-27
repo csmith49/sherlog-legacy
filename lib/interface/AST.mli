@@ -12,7 +12,7 @@ module Basic : sig
         | `Integer of int
         | `Boolean of bool
         | `Float of float
-        | `Atom of string
+        | `Constant of string
         | `Function of string * term list
     ]
     and cost = [
@@ -42,7 +42,7 @@ module Extended : sig
         | `Integer of int
         | `Boolean of bool
         | `Float of float
-        | `Atom of string
+        | `Constant of string
         | `Function of string * term list
         | `Distribution of string * term list * term list
     ]
@@ -54,7 +54,7 @@ module Extended : sig
         | `Integer of int
         | `Boolean of bool
         | `Float of float
-        | `Atom of string
+        | `Constant of string
         | `Function of string * term list
     ]
     and cost = [

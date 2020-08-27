@@ -3,7 +3,7 @@ type t =
     | Integer of int
     | Float of float
     | Boolean of bool
-    | Atom of string
+    | Constant of string
     | Function of string * t list
 
 let rec to_string = function
@@ -11,7 +11,7 @@ let rec to_string = function
     | Integer i -> string_of_int i
     | Float f -> string_of_float f
     | Boolean b -> string_of_bool b
-    | Atom a -> a
+    | Constant a -> a
     | Function (f, args) ->
         let args' = CCList.map to_string args in
         f ^ "(" ^ (CCString.concat ", " args') ^ ")"
@@ -21,7 +21,7 @@ let rec equal left right = match left, right with
     | Integer x, Integer y -> CCInt.equal x y
     | Float x, Float y -> CCFloat.equal x y
     | Boolean x, Boolean y -> CCBool.equal x y
-    | Atom x, Atom y -> CCString.equal x y
+    | Constant x, Constant y -> CCString.equal x y
     | Function (f, fs), Function (g, gs) ->
         (CCString.equal f g) && (CCList.for_all2 equal fs gs) 
     | _ -> false
@@ -33,7 +33,7 @@ let rec occurs id term = match term with
 
 let rec is_ground = function
     | Variable _ -> false
-    | (Integer _ | Float _ | Boolean _ | Atom _) -> true
+    | (Integer _ | Float _ | Boolean _ | Constant _) -> true
     | Function (_, args) -> CCList.for_all is_ground args
 
 module Make = struct
@@ -41,6 +41,6 @@ module Make = struct
     let int i = Integer i
     let float f = Float f
     let bool b = Boolean b
-    let atom s = Atom s
+    let const s = Constant s
     let apply f args = Function (f, args)
 end

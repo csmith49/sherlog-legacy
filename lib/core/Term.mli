@@ -4,7 +4,7 @@ type t =
     | Integer of int
     | Float of float
     | Boolean of bool
-    | Atom of string
+    | Constant of string
     | Function of string * t list
 
 val to_string : t -> string
@@ -19,6 +19,6 @@ module Make : sig
     val int : int -> t
     val float : float -> t
     val bool : bool -> t
-    val atom : string -> t
+    val const : string -> t
     val apply : string -> t list -> t
 end

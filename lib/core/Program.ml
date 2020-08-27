@@ -11,9 +11,9 @@ let to_string program = program
 
 let resolve obligation program = program |> CCList.filter_map (Clause.apply obligation)
 
-let try_cache state = match Proof.State.discharge_predicate state with
-    | Some (predicate, state) ->
-        if CCList.exists (fun p -> Predicate.equal p predicate) (Proof.State.cache state) then
+let try_cache state = match Proof.State.discharge_atom state with
+    | Some (atom, state) ->
+        if CCList.exists (fun p -> Atom.equal p atom) (Proof.State.cache state) then
             Some state
         else None
     | None -> None
