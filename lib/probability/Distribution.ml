@@ -1,7 +1,7 @@
 module ArgMap = CCMap.Make(CCString)
 
 module Symbol = struct
-    type t = Normal | Bernoulli
+    type t = Normal | Bernoulli | Dummy
     
     let of_string = function
         | "normal" | "Normal" | "N" -> Some Normal
@@ -11,10 +11,12 @@ module Symbol = struct
     let arguments = function
         | Normal -> [ "mean" ; "sd" ; ]
         | Bernoulli -> [ "success" ; ]
+        | Dummy -> []
 
     let to_string = function
         | Normal -> "Normal"
         | Bernoulli -> "Bernoulli"
+        | Dummy -> "Dummy"
     
     let to_json s = `String (to_string s)
 end
@@ -48,3 +50,13 @@ let to_string dist =
         |> CCList.map (fun (k, v) -> k ^ "=" ^ (Core.Term.to_string v))
         |> CCString.concat ", " in
     symbol ^ "(" ^ args ^ ")"
+
+let dummy = {
+    distribution = Symbol.Dummy;
+    arguments = ArgMap.empty;
+}
+
+let variables dist = dist.arguments
+    |> ArgMap.to_list
+    |> CCList.map snd
+    |> CCList.flat_map Core.Term.variables

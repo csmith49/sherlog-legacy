@@ -68,6 +68,18 @@ let rec to_json = function
         ("arguments", `List (CCList.map to_json fs));
     ]
 
+(* TODO - optimize *)
+let rec hash = function
+    | Variable x -> x 
+        |> Data.Identifier.to_string
+        |> CCHash.string
+    | Integer i -> CCHash.int i
+    | Float f -> CCFloat.hash f
+    | Boolean b -> CCHash.bool b
+    | Constant c -> CCHash.string c
+    | Function (f, fs) ->
+        CCHash.combine2 (CCHash.string f) (CCHash.list hash fs)
+
 module Make = struct
     let var x = Variable (x |> Data.Identifier.of_string)
     let int i = Integer i

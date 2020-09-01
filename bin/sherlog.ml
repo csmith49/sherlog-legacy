@@ -34,8 +34,15 @@ let _ = match Interface.parse_file !filepath with
                     cost ^ " : " ^ sub
                 )
         ) |> CCString.concat "\n" |> print_endline in
-        let model = Probability.Model.of_formula (fst (CCList.hd solutions)) in
+        let proof = CCList.map fst solutions in
+        let model = Probability.Model.of_proof proof in
         let _ = print_endline "---<  MODEL  >---" in
-        let _ = Probability.Model.print Probability.Model.factor_view model
+        let _ = Probability.Model.print Probability.Model.view_to_factor_string model in
+        let _ = print_endline "---<   OBS   >---" in
+        let _ = model
+            |> Probability.Model.observations
+            |> CCList.map Core.Substitution.of_list
+            |> CCList.map Core.Substitution.to_string
+            |> CCList.iter print_endline
         in ()
   | None -> print_endline "Program parsing failed..."

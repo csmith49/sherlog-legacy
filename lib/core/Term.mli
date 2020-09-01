@@ -7,17 +7,20 @@ type t =
     | Constant of string
     | Function of string * t list
 
+(* conversion *)
 val to_string : t -> string
-val equal : t -> t -> bool
-
-val occurs : Data.Identifier.t -> t -> bool
-
-val is_ground : t -> bool
-
-val variables : t -> Data.Identifier.t list
-
 val to_json : t -> Yojson.Basic.t
 
+(* comparison *)
+val equal : t -> t -> bool
+val hash : t -> int
+
+(* understanding variabless *)
+val occurs : Data.Identifier.t -> t -> bool
+val is_ground : t -> bool
+val variables : t -> Data.Identifier.t list
+
+(* utility for making *)
 module Make : sig
     val var : string -> t
     val int : int -> t
