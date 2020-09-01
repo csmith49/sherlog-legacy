@@ -40,3 +40,11 @@ let to_json dist = `Assoc [
     ("distribution", dist.distribution |> Symbol.to_json);
     ("arguments", `Assoc (dist.arguments |> ArgMap.to_list |> CCList.map (fun (k, v) -> (k, Core.Term.to_json v))));
 ]
+
+let to_string dist =
+    let symbol = Symbol.to_string dist.distribution in
+    let args = dist.arguments
+        |> ArgMap.to_list
+        |> CCList.map (fun (k, v) -> k ^ "=" ^ (Core.Term.to_string v))
+        |> CCString.concat ", " in
+    symbol ^ "(" ^ args ^ ")"

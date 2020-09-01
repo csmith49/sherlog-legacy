@@ -6,6 +6,8 @@ module Conjunct : sig
     val substitute : t -> Substitution.t -> t
 
     val variables : t -> Data.Identifier.t list
+
+    val decompose_sample : t -> (Term.t * Term.t * Term.t list) option
 end
 
 type t

@@ -55,6 +55,10 @@ module Conjunct = struct
             CCList.flat_map Term.variables (x :: dist :: event_space)
         | Eq (l, r) -> (Term.variables l) @ (Term.variables r)
         | LEq (l, r) -> (Term.variables l) @ (Term.variables r)
+
+    let decompose_sample = function
+        | Sample (x, dist, event_space) -> Some (x, dist, event_space)
+        | _ -> None
 end
 
 type t = Conjunct.t list

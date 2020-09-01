@@ -67,7 +67,7 @@ module Step = struct
                     let sub = Substitution.compose s s' in
                         (cost, sub)
                 ) (Formula.empty, Substitution.empty) in
-            (cost |> Formula.simplify, sub)
+            (Formula.substitute cost sub |> Formula.simplify, sub)
     
         let cost der = der |> summary |> fst
     end

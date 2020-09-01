@@ -33,6 +33,9 @@ let _ = match Interface.parse_file !filepath with
                         |> Core.Substitution.to_string in
                     cost ^ " : " ^ sub
                 )
-        ) |> CCString.concat "\n" |> print_endline
+        ) |> CCString.concat "\n" |> print_endline in
+        let model = Probability.Model.of_formula (fst (CCList.hd solutions)) in
+        let _ = print_endline "---<  MODEL  >---" in
+        let _ = Probability.Model.print Probability.Model.factor_view model
         in ()
   | None -> print_endline "Program parsing failed..."

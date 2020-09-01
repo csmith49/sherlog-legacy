@@ -1,8 +1,11 @@
 type t
 
-val of_list : (Data.Identifier.t * Data.Identifier.t list * Distribution.t) list -> t
-val to_list : t -> (Data.Identifier.t * Data.Identifier.t list * Distribution.t) list
+(* construction *)
+val empty : t
+val of_formula : Core.Formula.t -> t
 
-val to_json : t -> Yojson.Basic.t
+(* display *)
+type view = (Data.Identifier.t * Data.Identifier.t list * Distribution.t) -> string
+val factor_view : view
 
-val of_formula : Core.Formula.t -> t option
+val print : view -> t -> unit
