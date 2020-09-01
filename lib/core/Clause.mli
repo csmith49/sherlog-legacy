@@ -1,9 +1,13 @@
 type t
+(* for submodules *)
+type clause = t
 
 (* access *)
 val head : t -> Atom.t
 val body : t -> Atom.t list
 val variables : t -> Data.Identifier.t list
+val cost_variables : t -> Data.Identifier.t list
+val existential_variables : t -> Data.Identifier.t list
 
 (* printing *)
 val to_string : t -> string

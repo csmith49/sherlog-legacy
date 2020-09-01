@@ -3,13 +3,24 @@ type t = {
     body : Atom.t list;
     cost : Formula.t; (* by construction, formula only contains variables in head/body *)
 }
+type clause = t
 
 let head clause = clause.head
 let body clause = clause.body
-let variables clause =
-    let head_vars = Atom.variables clause.head in
-    let body_vars = CCList.flat_map Atom.variables clause.body in
-        head_vars @ body_vars
+
+module IdSet = CCSet.Make(Data.Identifier)
+
+let head_vars clause = clause.head
+    |> Atom.variables
+    |> IdSet.of_list
+let body_vars clause = clause.body
+    |> CCList.flat_map Atom.variables
+    |> IdSet.of_list
+
+let variables clause = IdSet.union (head_vars clause) (body_vars clause) |> IdSet.to_list
+
+let cost_variables clause = clause.cost |> Formula.variables
+let existential_variables clause = IdSet.diff (head_vars clause) (body_vars clause) |> IdSet.to_list
 
 let to_string clause =
     let head = Atom.to_string clause.head in

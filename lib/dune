@@ -1,4 +1,4 @@
 (library
     (name sherlog)
-    (libraries core data interface)
+    (libraries core data interface probability)
 )

@@ -1,13 +1,21 @@
-type symbol = {
-    name : string;
-    arity : int;
-}
+module Symbol = struct
+    type t = {
+        name : string;
+        arity : int;
+    }
 
-let symbol_equal left right = (CCString.equal left.name right.name) && (CCInt.equal left.arity right.arity)
-let symbol_to_string symbol = symbol.name ^ "/" ^ (string_of_int symbol.arity)
+    let to_string symbol = symbol.name ^ "/" ^ (string_of_int symbol.arity)
+    let compare s1 s2 = 
+        let name_comp = CCString.compare s1.name s2.name in
+        if name_comp == 0 then
+            CCInt.compare s1.arity s2.arity
+        else name_comp
+    let equal s1 s2 = (compare s1 s2) == 0
+end
+
 
 type t = {
-    symbol : symbol;
+    symbol : Symbol.t;
     arguments : Term.t list;
 }
 
@@ -21,7 +29,7 @@ let variables atom = atom.arguments
 let is_ground atom = atom.arguments
     |> CCList.for_all Term.is_ground
 
-let equal left right = (symbol_equal left.symbol right.symbol) &&
+let equal left right = (Symbol.equal left.symbol right.symbol) &&
     (CCList.equal Term.equal left.arguments right.arguments)
 
 let to_string atom =
@@ -30,7 +38,7 @@ let to_string atom =
     symbol ^ "(" ^ arguments' ^ ")"
 
 let unify left right = 
-    if not (symbol_equal left.symbol right.symbol) then None else
+    if not (Symbol.equal left.symbol right.symbol) then None else
     let argument_eqs = CCList.combine left.arguments right.arguments in
     let equations = argument_eqs in
         Unification.solve equations
@@ -41,9 +49,23 @@ let substitute atom sub = {atom with
 
 let make name args =
     let symbol = {
-        name = name;
+        Symbol.name = name;
         arity = CCList.length args;
     } in {
         symbol = symbol;
         arguments = args;
     }
+
+(* positions *)
+module Position = struct
+    type t = Symbol.t * int
+
+    let compare = CCPair.compare Symbol.compare CCInt.compare
+    let equal = CCPair.equal Symbol.equal CCInt.equal
+end
+
+let positions atom = atom.arguments
+    |> CCList.mapi (fun index -> fun tm -> match tm with
+        | Term.Variable x -> Some (x, (atom.symbol, index))
+        | _ -> None)
+    |> CCList.keep_some

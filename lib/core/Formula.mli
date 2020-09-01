@@ -4,6 +4,8 @@ module Conjunct : sig
     val to_string : t -> string
     val equal : t -> t -> bool
     val substitute : t -> Substitution.t -> t
+
+    val variables : t -> Data.Identifier.t list
 end
 
 type t
@@ -15,6 +17,7 @@ val simplify : t -> t
 val conjoin : t -> t -> t
 val conjuncts : t -> Conjunct.t list
 val substitute : t -> Substitution.t -> t
+val variables : t -> Data.Identifier.t list
 
 module Make : sig
     val draw_from : Term.t -> Term.t -> Term.t list -> t

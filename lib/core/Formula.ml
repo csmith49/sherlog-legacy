@@ -49,6 +49,12 @@ module Conjunct = struct
             let l' = Substitution.apply l sub in
             let r' = Substitution.apply r sub in
             LEq (l', r')
+
+    let variables = function
+        | Sample (x, dist, event_space) ->
+            CCList.flat_map Term.variables (x :: dist :: event_space)
+        | Eq (l, r) -> (Term.variables l) @ (Term.variables r)
+        | LEq (l, r) -> (Term.variables l) @ (Term.variables r)
 end
 
 type t = Conjunct.t list
@@ -67,6 +73,8 @@ let conjoin = (@)
 
 let substitute formula sub = formula
     |> CCList.map (fun c -> Conjunct.substitute c sub)
+
+let variables = CCList.flat_map Conjunct.variables
 
 module Make = struct
     let draw_from x dist es = [Conjunct.Sample (x, dist, es)]

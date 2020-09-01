@@ -36,6 +36,38 @@ let rec is_ground = function
     | (Integer _ | Float _ | Boolean _ | Constant _) -> true
     | Function (_, args) -> CCList.for_all is_ground args
 
+let rec variables = function
+    | Variable x -> [x]
+    | Function (_, args) -> CCList.flat_map variables args
+    | _ -> []
+
+let rec to_json = function
+    | Variable x -> `Assoc [
+        ("type", `String "variable");
+        ("value", Data.Identifier.to_json x);
+    ]
+    | Integer i -> `Assoc [
+        ("type", `String "integer");
+        ("value", `Int i);
+    ]
+    | Float f -> `Assoc [
+        ("type", `String "float");
+        ("value", `Float f);
+    ]
+    | Boolean b -> `Assoc [
+        ("type", `String "boolean");
+        ("value", `Bool b);
+    ]
+    | Constant c -> `Assoc [
+        ("type", `String "constant");
+        ("value", `String c);
+    ]
+    | Function (f, fs) -> `Assoc [
+        ("type", `String "function");
+        ("value", `String f);
+        ("arguments", `List (CCList.map to_json fs));
+    ]
+
 module Make = struct
     let var x = Variable (x |> Data.Identifier.of_string)
     let int i = Integer i

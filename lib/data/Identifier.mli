@@ -15,4 +15,4 @@ val split : int -> t -> t list
 val equal : t -> t -> bool
 val compare : t -> t -> int
 
-val printer : t CCFormat.printer
+val to_json : t -> Yojson.Basic.t

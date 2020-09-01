@@ -14,6 +14,10 @@ val occurs : Data.Identifier.t -> t -> bool
 
 val is_ground : t -> bool
 
+val variables : t -> Data.Identifier.t list
+
+val to_json : t -> Yojson.Basic.t
+
 module Make : sig
     val var : string -> t
     val int : int -> t

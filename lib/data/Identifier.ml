@@ -45,4 +45,9 @@ let split n id = CCList.range 0 n
         context = id.context;
     })
 
-let printer format id = CCFormat.string format (to_string id)
+let to_json id = `Assoc [
+    ("type", `String "identifier");
+    ("value", `String id.name);
+    ("index", `Int id.index);
+    ("context", `Int id.context);
+]
