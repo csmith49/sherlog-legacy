@@ -16,6 +16,7 @@ val is_ground : t -> bool
 
 (* printing *)
 val to_string : t -> string
+val to_json : t -> Yojson.Basic.t
 
 (* equality *)
 val equal : t -> t -> bool

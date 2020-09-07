@@ -45,9 +45,4 @@ let split n id = CCList.range 0 n
         context = id.context;
     })
 
-let to_json id = `Assoc [
-    ("type", `String "identifier");
-    ("value", `String id.name);
-    ("index", `Int id.index);
-    ("context", `Int id.context);
-]
+let to_json id = `String id.name

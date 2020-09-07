@@ -42,29 +42,13 @@ let rec variables = function
     | _ -> []
 
 let rec to_json = function
-    | Variable x -> `Assoc [
-        ("type", `String "variable");
-        ("value", Data.Identifier.to_json x);
-    ]
-    | Integer i -> `Assoc [
-        ("type", `String "integer");
-        ("value", `Int i);
-    ]
-    | Float f -> `Assoc [
-        ("type", `String "float");
-        ("value", `Float f);
-    ]
-    | Boolean b -> `Assoc [
-        ("type", `String "boolean");
-        ("value", `Bool b);
-    ]
-    | Constant c -> `Assoc [
-        ("type", `String "constant");
-        ("value", `String c);
-    ]
+    | Variable x -> Data.Identifier.to_json x
+    | Integer i -> `Int i
+    | Float f -> `Float f
+    | Boolean b -> `Bool b
+    | Constant c -> `String c
     | Function (f, fs) -> `Assoc [
-        ("type", `String "function");
-        ("value", `String f);
+        ("function", `String f);
         ("arguments", `List (CCList.map to_json fs));
     ]
 

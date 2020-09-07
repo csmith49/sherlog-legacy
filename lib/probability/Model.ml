@@ -59,8 +59,27 @@ let print view model = model.graph
     )
 
 (* and writing out *)
-(* TODO *)
-let to_json _ = `Null
+let rec to_json model =
+    let observations = model
+        |> observations
+        |> CCList.map observation_to_json in
+    let views = model
+        |> views
+        |> CCList.map view_to_json in
+    `Assoc [
+        ("model", `List views);
+        ("observations", `List observations);
+    ]
+and observation_to_json observation =
+    let pair_to_json (node, value) = `Assoc [
+        ("variable", Data.Identifier.to_json node);
+        ("value", Core.Term.to_json value)
+    ] in `List (CCList.map pair_to_json observation)
+and view_to_json (node, parents, cpd) = `Assoc [
+    ("variable", Data.Identifier.to_json node);
+    ("dependencies", `List (CCList.map Data.Identifier.to_json parents));
+    ("distribution", Distribution.to_json cpd);
+]
 
 (* the complicated model-construction stuff goes here *)
 
