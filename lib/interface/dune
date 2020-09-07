@@ -1,6 +1,6 @@
 (library
     (name interface)
-    (libraries core data)
+    (libraries core data lwt lwt.unix)
 )
 (ocamllex lexer)
 

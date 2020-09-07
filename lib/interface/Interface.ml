@@ -8,3 +8,13 @@ let parse_file filename =
         |> parse_ast
         |> CCOpt.map AST.Extended.simplify
         |> CCOpt.map AST.Basic.compile
+
+module Network = struct
+    type handler = Network.handler
+    type port = int
+
+    let local_handler_server port handler =
+        let socket = Network.socket Network.local_address port in
+        let server = Network.server handler socket in
+            server
+end

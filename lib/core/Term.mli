@@ -10,6 +10,7 @@ type t =
 (* conversion *)
 val to_string : t -> string
 val to_json : t -> Yojson.Basic.t
+val of_json : Yojson.Basic.t -> t option
 
 (* comparison *)
 val equal : t -> t -> bool

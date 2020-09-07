@@ -17,3 +17,7 @@ let summarize_substitution q sub = q
     |> variables
     |> CCList.map (fun x -> (x, Substitution.lookup_identifier x sub))
     |> Substitution.of_list
+
+let of_json json = json
+    |> Data.JSON.Parse.list Atom.of_json
+    |> CCOpt.map of_atom_list

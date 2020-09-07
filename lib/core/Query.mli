@@ -10,3 +10,5 @@ val substitute : t -> Substitution.t -> t
 val variables : t -> Data.Identifier.t list
 
 val summarize_substitution : t -> Substitution.t -> Substitution.t
+
+val of_json : Yojson.Basic.t -> t option

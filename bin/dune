@@ -1,4 +1,4 @@
 (executables
-    (names sherlog)
+    (names sherlog server)
     (libraries sherlog yojson)
 )

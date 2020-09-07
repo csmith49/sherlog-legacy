@@ -41,17 +41,6 @@ let rec variables = function
     | Function (_, args) -> CCList.flat_map variables args
     | _ -> []
 
-let rec to_json = function
-    | Variable x -> Data.Identifier.to_json x
-    | Integer i -> `Int i
-    | Float f -> `Float f
-    | Boolean b -> `Bool b
-    | Constant c -> `String c
-    | Function (f, fs) -> `Assoc [
-        ("function", `String f);
-        ("arguments", `List (CCList.map to_json fs));
-    ]
-
 (* TODO - optimize *)
 let rec hash = function
     | Variable x -> x 
@@ -72,3 +61,59 @@ module Make = struct
     let const s = Constant s
     let apply f args = Function (f, args)
 end
+
+let rec to_json = function
+    | Variable x -> `Assoc [
+        mk_type "variable";
+        x |> Data.Identifier.to_string |> Data.JSON.Make.string |> mk_value;
+    ]
+    | Integer i -> `Assoc [
+        mk_type "integer";
+        i |> Data.JSON.Make.int |> mk_value;
+    ]
+    | Float f -> `Assoc [
+        mk_type "float";
+        f |> Data.JSON.Make.float |> mk_value;
+    ]
+    | Boolean b -> `Assoc [
+        mk_type "bool";
+        b |> Data.JSON.Make.bool |> mk_value;
+    ]
+    | Constant c -> `Assoc [
+        mk_type "constant";
+        c |> Data.JSON.Make.string |> mk_value;
+    ]
+    | Function (f, fs) -> `Assoc [
+        mk_type "function";
+        ("function", `String f);
+        ("arguments", fs |> CCList.map to_json |> Data.JSON.Make.list);
+    ]
+and mk_type typ = ("type", `String typ)
+and mk_value v = ("value", v)
+
+let rec of_json = function
+    | (`Assoc _) as json ->
+        (* get the type *)
+        begin match Data.JSON.Parse.(find string "type" json) with
+            | Some "integer" -> json
+                |> Data.JSON.Parse.(find int "value")
+                |> CCOpt.map Make.int
+            | Some "float" -> json
+                |> Data.JSON.Parse.(find float "value")
+                |> CCOpt.map Make.float
+            | Some "boolean" -> json
+                |> Data.JSON.Parse.(find bool "value")
+                |> CCOpt.map Make.bool
+            | Some "constant" -> json
+                |> Data.JSON.Parse.(find string "value")
+                |> CCOpt.map Make.const
+            | Some "variable" -> json
+                |> Data.JSON.Parse.(find string "value")
+                |> CCOpt.map Make.var
+            | Some "function" ->
+                let f = Data.JSON.Parse.(find string "function" json) in
+                let args = Data.JSON.Parse.(find (list of_json) "arguments" json) in
+                CCOpt.map2 Make.apply f args
+            | _ -> None
+        end
+    | _ -> None

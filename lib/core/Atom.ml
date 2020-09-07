@@ -37,11 +37,6 @@ let to_string atom =
     let arguments' = atom.arguments |> CCList.map Term.to_string |> CCString.concat ", " in
     symbol ^ "(" ^ arguments' ^ ")"
 
-let to_json atom = `Assoc [
-    ("relation", `String atom.symbol.name);
-    ("arguments", `List (atom.arguments |> CCList.map Term.to_json));
-]
-
 let unify left right = 
     if not (Symbol.equal left.symbol right.symbol) then None else
     let argument_eqs = CCList.combine left.arguments right.arguments in
@@ -74,3 +69,12 @@ let positions atom = atom.arguments
         | Term.Variable x -> Some (x, (atom.symbol, index))
         | _ -> None)
     |> CCList.keep_some
+
+let to_json atom = `Assoc [
+    ("relation", `String atom.symbol.name);
+    ("arguments", `List (atom.arguments |> CCList.map Term.to_json));
+]
+let of_json json =
+    let relation = Data.JSON.Parse.(find string "relation" json) in
+    let arguments = Data.JSON.Parse.(find (list Term.of_json) "arguments" json) in
+    CCOpt.map2 make relation arguments
