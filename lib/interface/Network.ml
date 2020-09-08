@@ -19,9 +19,9 @@ let safe_parse string = try Some (Yojson.Basic.from_string string) with _ -> Non
 
 (* applies a handler to a connection *)
 let rec handle_connection handler (ic, oc) () = Lwt_io.read_line_opt ic >>=
-    (fun msg -> match msg with
-        | Some msg ->
-            begin match msg |> safe_parse |> CCOpt.flat_map handler with
+    (fun msg -> 
+        match msg with
+        | Some msg -> begin match msg |> safe_parse |> CCOpt.flat_map handler with
             | Some result ->
                 let reply = Yojson.Basic.to_string result in
                 Lwt_io.write_line oc reply >>= (handle_connection handler (ic, oc))
@@ -39,6 +39,7 @@ let socket address port = let open Lwt_unix in
     let addr = ADDR_INET (address, port) in
     let _ = bind sock addr in
     let _ = listen sock 10 in
+    let _ = setsockopt sock SO_REUSEADDR in (* ensures we can restart the server quickly *)
         sock
 
 (* build the server *)

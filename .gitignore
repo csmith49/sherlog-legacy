@@ -1,4 +1,5 @@
 _build
 **/.merlin
+**/__pycache__
 sherlog
 server

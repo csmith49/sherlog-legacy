@@ -22,6 +22,8 @@ module Parse = struct
             |> CCOpt.flat_map parser
         | _ -> None
 
+    let identity = CCOpt.return
+
     let string = function
         | `String s -> Some s
         | _ -> None

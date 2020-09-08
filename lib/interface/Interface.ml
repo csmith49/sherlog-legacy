@@ -9,6 +9,11 @@ let parse_file filename =
         |> CCOpt.map AST.Extended.simplify
         |> CCOpt.map AST.Basic.compile
 
+let parse_string str = str
+    |> parse_ast
+    |> CCOpt.map AST.Extended.simplify
+    |> CCOpt.map AST.Basic.compile
+
 module Network = struct
     type handler = Network.handler
     type port = int

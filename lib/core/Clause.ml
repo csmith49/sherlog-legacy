@@ -86,3 +86,19 @@ let make head body = {head = head; body = body; cost = Formula.empty}
 let fact pred = {head = pred; body = []; cost = Formula.empty}
 
 let add_cost cost clause = {clause with cost = Formula.conjoin cost clause.cost}
+
+(* JSON *)
+let to_json clause = `Assoc [
+    ("head", Atom.to_json clause.head);
+    ("body", `List (CCList.map Atom.to_json clause.body));
+    ("cost", Formula.to_json clause.cost);
+]
+
+let of_json json =
+    let head = Data.JSON.Parse.(find Atom.of_json "head" json) in
+    let body = Data.JSON.Parse.(find (list Atom.of_json) "body" json) in
+    let cost = Data.JSON.Parse.(find Formula.of_json "cost" json) in
+    match head, body, cost with
+        | Some head, Some body, Some cost -> Some (make head body |> add_cost cost)
+        | Some head, Some body, None      -> Some (make head body)
+        | _                               -> None

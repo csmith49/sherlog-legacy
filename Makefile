@@ -1,3 +1,6 @@
+.PHONY: all
+all: sherlog server
+
 # building the executables
 sherlog: lib bin/sherlog.ml
 	@dune build bin/sherlog.exe
@@ -16,4 +19,4 @@ live: lib
 .PHONY: clean
 clean:
 	@dune clean
-	@rm -rf _build sherlog
+	@rm -rf _build sherlog server

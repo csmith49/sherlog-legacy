@@ -59,6 +59,48 @@ module Conjunct = struct
     let decompose_sample = function
         | Sample (x, dist, event_space) -> Some (x, dist, event_space)
         | _ -> None
+
+    let to_json = function
+        | Sample (x, dist, es) -> `Assoc [
+            ("type", `String "sample");
+            ("target", Term.to_json x);
+            ("distribution", Term.to_json dist);
+            ("event_space", `List (CCList.map Term.to_json es));
+        ]
+        | Eq (l, r) -> `Assoc [
+            ("type", `String "eq");
+            ("left", Term.to_json l);
+            ("right", Term.to_json r);
+        ]
+        | LEq (l, r) -> `Assoc [
+            ("type", `String "leq");
+            ("left", Term.to_json l);
+            ("right", Term.to_json r);
+        ]
+
+    let of_json json = match Data.JSON.Parse.(find string "type" json) with
+        | Some "sample" ->
+            let target = Data.JSON.Parse.(find Term.of_json "target" json) in
+            let distribution = Data.JSON.Parse.(find Term.of_json "distribution" json) in
+            let event_space = Data.JSON.Parse.(find (list Term.of_json) "event_space" json) in
+            begin match target, distribution, event_space with
+                | Some target, Some distribution, Some event_space -> Some (
+                    Sample (target, distribution, event_space)
+                )
+                | _ -> None end
+        | Some "eq" ->
+            let left = Data.JSON.Parse.(find Term.of_json "left" json) in
+            let right = Data.JSON.Parse.(find Term.of_json "right" json) in
+            begin match left, right with
+                | Some left, Some right -> Some (Eq (left, right))
+                | _ -> None end
+        | Some "leq" ->
+            let left = Data.JSON.Parse.(find Term.of_json "left" json) in
+            let right = Data.JSON.Parse.(find Term.of_json "right" json) in
+            begin match left, right with
+                | Some left, Some right -> Some (LEq (left, right))
+                | _ -> None end
+        | _ -> None
 end
 
 type t = Conjunct.t list
@@ -85,3 +127,7 @@ module Make = struct
     let eq x y = [Conjunct.Eq (x, y)]
     let leq x y = [Conjunct.LEq (x, y)]
 end
+
+(* JSON *)
+let to_json formula = `List (CCList.map Conjunct.to_json formula)
+let of_json json = Data.JSON.Parse.(list Conjunct.of_json json)

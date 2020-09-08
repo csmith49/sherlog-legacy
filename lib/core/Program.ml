@@ -69,3 +69,11 @@ module DependencyGraph = struct
         |> Graph.incoming vertex
         |> CCList.exists is_special_edge *)
 end
+
+(* JSON *)
+let to_json prog = prog
+    |> to_clause_list
+    |> CCList.map Clause.to_json
+    |> Data.JSON.Make.list
+
+let of_json json = Data.JSON.Parse.list Clause.of_json json |> of_clause_list
