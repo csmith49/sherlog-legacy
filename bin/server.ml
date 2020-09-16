@@ -1,12 +1,16 @@
 (* reference for argument parsing *)
 let port = ref 7999 (* default port, changeable via args *)
+let verbose = ref false (* whether or not we print out results when handling messages *)
 
 (* argument parsing *)
 let spec_list = [
     ("--port", Arg.Set_int port, "Port to host local server on");
+    ("--verbose", Arg.Set verbose, "Enable status updates to StdOut");
 ]
 let usage_msg = "Server for GDL"
 let _ = Arg.parse spec_list print_endline usage_msg
+
+let verbose_print str = if !verbose then print_endline str else ()
 
 (* message handling *)
 
@@ -20,7 +24,7 @@ let decompose json =
     let args    = Data.JSON.Parse.(find identity "arguments" json) in
     match command, message, args with
         | Some command, Some message, Some args -> Some (command, message, args)
-        | Some command, Some message, None      -> Some (command, message, `Null)
+        | Some command, Some message, None      -> Some (command, message, `Null) (* args are optional *)
         | _                                     -> None
 
 let handler json = match decompose json with
@@ -40,7 +44,7 @@ let handler json = match decompose json with
             Some (`Assoc [("result", `String "success")])
         | _ -> None end
     (* evaluate the provided query on the stored program *)
-    | Some ("evaluate", query, _) -> begin match Core.Query.of_json query with
+    | Some ("query", query, _) -> begin match Core.Query.of_json query with
         | Some query ->
             let strategy = Core.Program.linear_strategy !program in
             let tree = Core.Proof.Tree.of_query query

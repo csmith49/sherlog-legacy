@@ -22,7 +22,7 @@ class JSONSocket:
         self._is_connected = True
         logger.info(f"Socket connected to server on port {self.port}.")
         return self
-    
+
     def __exit__(self, *args):
         self._is_connected = False
         self._socket.close()
@@ -46,7 +46,6 @@ class JSONSocket:
         message = ""
         while True:
             message += self._socket.recv(buffer_size).decode()
-            print(message)
             try:
                 obj = loads(message)
                 logger.info(f"Response retrieved from server on port {self.port}.")

@@ -76,7 +76,7 @@ let rec to_json = function
         f |> Data.JSON.Make.float |> mk_value;
     ]
     | Boolean b -> `Assoc [
-        mk_type "bool";
+        mk_type "boolean";
         b |> Data.JSON.Make.bool |> mk_value;
     ]
     | Constant c -> `Assoc [
