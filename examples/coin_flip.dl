@@ -1,6 +1,6 @@
 # latent variable and flip semantics
-weight(C | normal[m, s ; weight, C]) :- is_coin(C).
-flip(C | bern[P ; flip, C]) :- weight(C, P).
+weight(C ; normal[m, s | weight, C]) :- is_coin(C).
+flip(C ; bern[P | flip, C]) :- weight(C, P).
 
 # minor conversion of random samples
 results(C, heads) :- flip(C, true).
@@ -11,3 +11,8 @@ is_coin(coin1).
 
 #query
 results(coin1, heads)?
+
+# test
++ results(coin1, heads).
++ results(coin1, heads).
++ results(coin1, tails).

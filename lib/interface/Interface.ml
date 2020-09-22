@@ -1,25 +1,16 @@
-let parse_ast string = Some (Parser.program Lexer.read (Lexing.from_string string))
+type result = AST.Parse.result
+let parse = AST.Parse.parse
+let program = AST.Parse.program
+let queries = AST.Parse.queries
+let evidence = AST.Parse.evidence
+let parameters = AST.Parse.parameters
 
-let parse_file filename =
-    let file_contents = filename
-        |> open_in
-        |> (fun f -> really_input_string f (in_channel_length f)) in
-    file_contents
-        |> parse_ast
-        |> CCOpt.map AST.Extended.simplify
-        |> CCOpt.map AST.Basic.compile
+type server = Network.server
+type handler = Yojson.Basic.t -> Yojson.Basic.t option
+type port = int
 
-let parse_string str = str
-    |> parse_ast
-    |> CCOpt.map AST.Extended.simplify
-    |> CCOpt.map AST.Basic.compile
-
-module Network = struct
-    type handler = Network.handler
-    type port = int
-
-    let local_handler_server port handler =
-        let socket = Network.socket Network.local_address port in
-        let server = Network.server handler socket in
-            server
-end
+let local_server handler port =
+    let socket = Network.socket Network.local_address port in
+    let server = Network.server handler socket in
+        server
+let run = Network.run

@@ -1,9 +1,9 @@
 # latent variable
-temperature(M | normal[m, s ; temperature, M]) :- is_mouse(M).
+temperature(M ; normal[m, s | temperature, M]) :- is_mouse(M).
 
 # rules for attacking
-attack(M, T | bern[p1 ; attack, M, T]) :- sniffs(M', M, T'), next(T', T).
-attack(M, T | bern[p2 ; attack, M, T]) :- is_significant(F, m, s), temperature(M, F), is_close(M, M', T).
+attack(M, T ; bern[p1 | attack, M, T]) :- sniffs(M', M, T'), next(T', T).
+attack(M, T ; bern[p2 | attack, M, T]) :- is_significant(F, m, s), temperature(M, F), is_close(M, M', T).
 
 # observations to make the test pass
 is_mouse(mouse1).
@@ -13,7 +13,7 @@ is_close(mouse1, mouse2, t2).
 next(t1, t2).
 
 # test of logical rules
-is_significant(T, m, s) <- abs(minus(T, m)) >= times(2, s).
+# is_significant(T, m, s) <- abs(minus(T, m)) >= times(2, s).
 
 # query
 attack(mouse1, T, true)?

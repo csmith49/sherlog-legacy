@@ -31,12 +31,16 @@ let handler json = match decompose json with
     (* echo the input - for test purposes *)
     | Some ("echo", message, _) -> Some message
     (* parse the string as if it were the contents of a file *)
-    | Some ("parse", `String message, _) -> begin match Interface.parse_string message with
-        | Some (query, program) -> Some (`Assoc [
-            ("query", Core.Query.to_json query);
+    | Some ("parse", `String message, _) -> 
+        let parse_result = Interface.parse message in
+        let program = Interface.program parse_result in
+        let parameters = Interface.parameters parse_result in
+        let evidence = Interface.evidence parse_result in
+        Some (`Assoc [
             ("program", Core.Program.to_json program);
+            ("evidence", `List (CCList.map Core.Evidence.to_json evidence));
+            ("parameters", `List (CCList.map Core.Parameter.to_json parameters));
         ])
-        | None -> None end
     (* register a provided program as a piece of global state *)
     | Some ("register", prog, _) -> begin match Core.Program.of_json prog with
         | Some prog ->
@@ -60,5 +64,5 @@ let handler json = match decompose json with
 
 (* main *)
 let _ =
-    let server = Interface.Network.local_handler_server !port handler in
-    Lwt_main.run @@ server ()
+    let server = Interface.local_server handler !port in
+    Interface.run server

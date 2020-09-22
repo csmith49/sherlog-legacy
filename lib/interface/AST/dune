@@ -1,0 +1,7 @@
+(library
+    (name AST)
+    (libraries core data)
+)
+(include_subdirs unqualified)
+(ocamllex lexer)
+(menhir (modules parser))

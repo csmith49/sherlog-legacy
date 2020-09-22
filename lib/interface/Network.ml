@@ -5,6 +5,7 @@ type handler = Yojson.Basic.t -> Yojson.Basic.t option
 type port = int
 type address = Lwt_unix.inet_addr
 type socket = Lwt_unix.file_descr
+type server = unit -> unit Lwt.t
 
 (* the local address *)
 let local_address = Unix.inet_addr_loopback
@@ -47,3 +48,5 @@ let server handler socket =
     let rec serve () =
         Lwt_unix.accept socket >>= handle_socket handler >>= serve
     in serve
+
+let run server = Lwt_main.run (server ())

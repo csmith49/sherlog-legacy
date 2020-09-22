@@ -38,17 +38,13 @@ rule read = parse
     (* symbols *)
     | ";" { SEMICOLON }
     | ":-" { ARROW }
-    | "<-" { IMPLIES }
-    | "&" { AND }
     | "|" { MID }
     | "." { PERIOD }
     | "," { COMMA }
+    | "+" { PLUS }
+    | "!" { BANG }
     (* queries *)
     | "?" { QMARK }
-    (* constraints *)
-    | "==" { EQUAL }
-    | "<=" { LEQ }
-    | ">=" { GEQ }
     (* eof *)
     | eof { EOF }
     (* boolean *)

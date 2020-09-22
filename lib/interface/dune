@@ -1,9 +1,4 @@
 (library
     (name interface)
-    (libraries core data lwt lwt.unix)
-)
-(ocamllex lexer)
-
-(menhir
-    (modules parser)
+    (libraries core data lwt lwt.unix AST)
 )

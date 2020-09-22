@@ -1,9 +1,15 @@
-val parse_file : string -> (Core.Query.t * Core.Program.t) option
-val parse_string : string -> (Core.Query.t * Core.Program.t) option
+type result
 
-module Network : sig
-    type handler = Yojson.Basic.t -> Yojson.Basic.t option
-    type port = int
+val parse : string -> result
 
-    val local_handler_server : port -> handler -> (unit -> unit Lwt.t)
-end
+val program : result -> Core.Program.t
+val queries : result -> Core.Query.t list
+val evidence : result -> Core.Evidence.t list
+val parameters : result -> Core.Parameter.t list
+
+type server
+type handler = Yojson.Basic.t -> Yojson.Basic.t option
+type port = int
+
+val local_server : handler -> port -> server
+val run : server -> unit
