@@ -1,0 +1,26 @@
+# based on the classic BN model of earthquakes and burglaries
+
+# parameters to be learned - how likely is an earthquake, and how likely is a burglary?
+!eq.
+!brg.
+
+# the probabilistic model
+earthquake(bern[eq | earthquake]).
+burglary(bern[brg | burglary]).
+
+alarm(bern[0.1 | alarm, earthquake]) :- earthquake(1.0).
+alarm(bern[0.7 | burglary, earthquake]) :- burglary(1.0).
+
+# we're away on vacation, so our only hope is to get a call from john or mary
+mary_calls(bern[0.5 | mary]) :- alarm(1.0).
+
+john_calls(bern[0.9 | john, earthquake]) :- alarm(1.0), earthquake(1.0).
+john_calls(bern[0.2 | john, burglary]) :- alarm(1.0), burglary(1.0).
+
+# query, for testing
+john_calls(1.0)?
+
+# observations
++ john_calls(1.0), mary_calls(0.0).
++ john_calls(1.0).
++ mary_calls(1.0).

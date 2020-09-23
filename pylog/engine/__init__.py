@@ -21,7 +21,7 @@ def parse(string):
     with JSONSocket(PORT) as s:
         s.send(message)
         response = s.receive()
-    return response["program"], response["query"]
+    return response["program"], response["evidence"], response["parameters"]
 
 def register(program):
     message = {

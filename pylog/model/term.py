@@ -13,6 +13,9 @@ class Variable:
     def __hash__(self):
         return hash(self.name)
 
+    def indexed(self, index):
+        return f"{self.name}_{index}"
+
 class Function:
     def __init__(self, symbol, arguments):
         self.symbol = symbol

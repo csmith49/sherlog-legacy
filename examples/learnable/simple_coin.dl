@@ -1,0 +1,15 @@
+# the simplest possible learning task - can easily be solved exactly
+
+# the parameter to be learned
+!weight.
+
+# the only IDB rule
+flip(C ; bern[weight | C]) :- is_coin(C).
+
+# the EDB introducing a coin
+is_coin(c).
+
+# a sequence of observations
++ flip(c, 0.0).
++ flip(c, 0.0).
++ flip(c, 1.0).

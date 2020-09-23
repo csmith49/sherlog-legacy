@@ -18,9 +18,9 @@ class Statement:
         dist = distribution.of_json(json["distribution"])
         return cls(variable, dependencies, dist)
 
-    def to_pyro(self, variable_mapping, parameter_mapping):
-        dist = self.distribution.to_pyro(variable_mapping, parameter_mapping)
-        return self.variable, pyro.sample(self.variable.name, dist)
+    def to_pyro(self, variables, parameters, index=0):
+        dist = self.distribution.to_pyro(variables, parameters)
+        return self.variable, pyro.sample(self.variable.indexed(index), dist)
 
 def of_json(json):
     return Statement.of_json(json)

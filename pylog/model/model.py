@@ -54,9 +54,9 @@ class Model:
             resolved_variables.add(stmt.variable.name)
             initial_statements += [s for s in self.dataflow(stmt) if is_resolved(s)]
 
-    def to_pyro(self, parameter_mapping):
-        variable_mapping = {}
+    def to_pyro(self, parameters, index=0):
+        variables = {}
         for statement in self.topological_statements():
-            v, dist = statement.to_pyro(variable_mapping, parameter_mapping)
-            variable_mapping[v.name] = dist
-        return variable_mapping
+            v, dist = statement.to_pyro(variables, parameters, index)
+            variables[v.indexed(index)] = dist
+        return variables
